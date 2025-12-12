@@ -4,7 +4,7 @@
 
 import type { ApiResponse, ApiErrorResponse } from '@/types/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8765';
 const API_VERSION = import.meta.env.VITE_API_VERSION || 'v1';
 
 export class ApiError extends Error {
