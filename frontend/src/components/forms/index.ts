@@ -17,3 +17,4 @@ export { SaveIndicator, type SaveIndicatorProps } from "./SaveIndicator";
 // Tab components
 export { ApiInfoTab, type ApiInfoTabProps } from "./tabs";
 export { ModelsTab, type ModelsTabProps } from "./tabs";
+export { FieldEditor, type FieldEditorProps } from "./tabs";
