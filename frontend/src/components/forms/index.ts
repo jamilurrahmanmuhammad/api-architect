@@ -13,3 +13,6 @@ export {
   type ProfileLevel,
 } from "./ProfileGate";
 export { SaveIndicator, type SaveIndicatorProps } from "./SaveIndicator";
+
+// Tab components
+export { ApiInfoTab, type ApiInfoTabProps } from "./tabs";
