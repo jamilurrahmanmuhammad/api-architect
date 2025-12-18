@@ -19,7 +19,7 @@ from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.oas_routes import router
+from src.api.oas_routes import router, _undo_redo_service
 from src.db import database as db_module
 
 
@@ -27,6 +27,12 @@ from src.db import database as db_module
 def mock_session():
     """Create a mock database session."""
     session = AsyncMock(spec=AsyncSession)
+    # Mock execute to return a result that has scalars()
+    mock_result = AsyncMock()
+    mock_result.scalars.return_value.all.return_value = []
+    mock_result.scalars.return_value.first.return_value = None
+    session.execute.return_value = mock_result
+    session.commit.return_value = None
     return session
 
 
@@ -42,6 +48,18 @@ def client(mock_session):
 
     app.dependency_overrides[db_module.get_db] = mock_get_db
     return TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def reset_service_state():
+    """Reset the global undo/redo service state between tests."""
+    # Clear stacks before test
+    _undo_redo_service._stacks.clear()
+
+    yield
+
+    # Clear stacks after test
+    _undo_redo_service._stacks.clear()
 
 
 @pytest.fixture
