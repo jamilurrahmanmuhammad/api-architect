@@ -7,3 +7,4 @@ export { ApiInfoTab, type ApiInfoTabProps } from "./ApiInfoTab";
 export { ModelsTab, type ModelsTabProps } from "./ModelsTab";
 export { FieldEditor, type FieldEditorProps } from "./FieldEditor";
 export { OperationsTab, type OperationsTabProps } from "./OperationsTab";
+export { ParametersEditor, type ParametersEditorProps } from "./ParametersEditor";
