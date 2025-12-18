@@ -52,6 +52,32 @@ The system MUST provide a single, text-first way to define integration requireme
 - All generated artefacts MUST trace back to source requirements
 - The system MUST support progressive refinement (high-level to detailed)
 
+### I.A. Interactive DSL Authoring Studio
+
+The Requirements Grammar Authoring Studio (DSL Editor) MUST provide real-time, interactive authoring of specifications in a markdown-based Domain-Specific Language (DSL) optimised for API requirements definition.
+
+**Editor Experience:**
+- **Split-pane layout** with side-by-side editor and live preview, matching industry-standard UX patterns (Swagger Editor parity)
+- **Real-time syntax validation** using best-effort incremental parsing; show valid entities parsed so far and flag unparseable sections clearly
+- **Bidirectional selection**: Clicking a preview entity highlights its DSL definition and vice versa
+- **Context-aware autocomplete** for DSL keywords and constructs, reducing authoring errors
+- **Backend persistence** with version history, enabling collaboration and disaster recovery
+
+**MVP DSL Scope:**
+- Service definitions (name, metadata, base path)
+- Models with basic types (string, number, boolean, object, array)
+- Operations with HTTP semantics (GET, POST, PUT, PATCH, DELETE)
+- Error definitions with status codes and descriptions
+- Security constraints deferred to Phase 2
+
+**Architecture Principles:**
+- Cloud-native, microservices-oriented backend storage (open source technologies)
+- Observability and service mesh integration as first-class citizens
+- Plain-text, version-control-friendly DSL (no binary formats)
+- Markdown-based syntax for human readability and simplicity
+
+**Rationale:** Text-first authoring is only viable when the authoring experience is frictionless. The DSL editor removes barriers to entry while maintaining precision sufficient for deterministic specification generation. Real-time feedback (syntax validation, preview) reduces debugging cycles and builds user confidence. Incremental parsing and best-effort preview honor the reality of active editing: valid subsections should be usable even while other sections are incomplete.
+
 ### II. Multi-Format Output
 
 The system MUST support generation of comprehensive output formats including:
@@ -409,4 +435,25 @@ Support for:
 - Complexity additions MUST be justified against simplicity principle
 - Security controls MUST be validated before deployment
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-08 | **Last Amended**: 2025-12-08
+**Version**: 1.1.0 | **Ratified**: 2025-12-08 | **Last Amended**: 2025-12-11
+
+---
+
+## Amendment History
+
+### Amendment 1 (2025-12-11) – Feature 002 DSL Editor Principles
+**Change Type**: MINOR (New sub-principle)
+**Rationale**: Feature 002 (Requirements Grammar Authoring Studio) clarifications establish foundational editorial experience and architectural directives that require constitutional codification.
+**Changes**:
+- Added Principle I.A: **Interactive DSL Authoring Studio**
+  - Specifies split-pane editor/preview UX (Swagger Editor parity)
+  - Establishes real-time validation strategy (best-effort incremental parsing)
+  - Defines MVP DSL scope: Service, Model, Operation, Error (Security Phase 2)
+  - Mandates markdown-based syntax and plain-text storage
+  - Requires cloud-native, microservices, open source architecture
+  - Establishes observability and service mesh as first-class requirements
+  - Documents bidirectional selection and context-aware autocomplete expectations
+
+**Impact**: Provides constitutional authority for Feature 002 architecture and task decomposition. Aligns DSL editor UX and backend architecture with project principles before implementation.
+
+**Dependent Files Updated**: None (constitution forms basis for all dependent specs and plans)

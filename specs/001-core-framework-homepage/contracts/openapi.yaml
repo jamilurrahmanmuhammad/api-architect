@@ -1,0 +1,552 @@
+openapi: 3.1.0
+info:
+  title: API Architect - Core Framework API
+  description: |
+    REST API for the API Architect Core Framework & Homepage feature.
+    Provides endpoints for health checks, module configuration, and authentication shell.
+  version: 0.1.0
+  contact:
+    name: API Architect Team
+  license:
+    name: MIT
+    identifier: MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.api-architect.dev
+    description: Development environment
+
+tags:
+  - name: Health
+    description: Health check and readiness endpoints
+  - name: Modules
+    description: Module configuration and discovery
+  - name: Auth
+    description: Authentication shell (mocked)
+
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      description: Returns the health status of the API service
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                data:
+                  status: healthy
+                  version: 0.1.0
+                  timestamp: '2025-12-10T00:00:00Z'
+                meta:
+                  requestId: '550e8400-e29b-41d4-a716-446655440000'
+                  timestamp: '2025-12-10T00:00:00Z'
+
+  /api/v1/health/ready:
+    get:
+      operationId: getReadiness
+      summary: Readiness probe
+      description: Returns whether the service is ready to accept traffic
+      tags:
+        - Health
+      security: []
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+        '503':
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/modules:
+    get:
+      operationId: listModules
+      summary: List all modules
+      description: Returns all registered application modules with their configuration
+      tags:
+        - Modules
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: enabled
+          in: query
+          description: Filter by enabled status
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of modules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/modules/{moduleId}:
+    get:
+      operationId: getModule
+      summary: Get module by ID
+      description: Returns a specific module's configuration
+      tags:
+        - Modules
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: moduleId
+          in: path
+          description: Module identifier
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z][a-z0-9-]*$'
+            example: requirements-studio
+      responses:
+        '200':
+          description: Module details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/login:
+    post:
+      operationId: login
+      summary: Mock login
+      description: |
+        Authenticates a user and returns a session.
+        This is a mocked endpoint for development; will be replaced with real auth provider.
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/logout:
+    post:
+      operationId: logout
+      summary: Logout
+      description: Terminates the current user session
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/me:
+    get:
+      operationId: getCurrentUser
+      summary: Get current user
+      description: Returns the currently authenticated user's information
+      tags:
+        - Auth
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT bearer token authentication.
+        For development, use mock token: `mock-token-12345`
+
+  schemas:
+    # Common schemas
+    ApiMeta:
+      type: object
+      description: Response metadata
+      required:
+        - requestId
+        - timestamp
+      properties:
+        requestId:
+          type: string
+          format: uuid
+          description: Request correlation ID
+          example: '550e8400-e29b-41d4-a716-446655440000'
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+          example: '2025-12-10T00:00:00Z'
+
+    ApiError:
+      type: object
+      description: Error information
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code
+          example: UNAUTHORIZED
+        message:
+          type: string
+          description: Human-readable error message
+          example: Authentication required
+        details:
+          type: object
+          description: Additional error context
+          additionalProperties: true
+
+    ErrorResponse:
+      type: object
+      description: Standard error response
+      required:
+        - error
+        - meta
+      properties:
+        error:
+          $ref: '#/components/schemas/ApiError'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    # Health schemas
+    HealthStatus:
+      type: string
+      enum:
+        - healthy
+        - degraded
+        - unhealthy
+      description: Health status indicator
+
+    HealthData:
+      type: object
+      description: Health check data
+      required:
+        - status
+        - version
+        - timestamp
+      properties:
+        status:
+          $ref: '#/components/schemas/HealthStatus'
+        version:
+          type: string
+          description: Application version
+          example: '0.1.0'
+        timestamp:
+          type: string
+          format: date-time
+          description: Check timestamp
+
+    HealthResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/HealthData'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    ReadinessData:
+      type: object
+      required:
+        - ready
+      properties:
+        ready:
+          type: boolean
+          description: Whether service is ready
+
+    ReadinessResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/ReadinessData'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    # Module schemas
+    Module:
+      type: object
+      description: Application module
+      required:
+        - id
+        - name
+        - description
+        - icon
+        - route
+        - enabled
+        - order
+      properties:
+        id:
+          type: string
+          description: Unique identifier (kebab-case)
+          pattern: '^[a-z][a-z0-9-]*$'
+          minLength: 1
+          maxLength: 50
+          example: requirements-studio
+        name:
+          type: string
+          description: Display name
+          minLength: 1
+          maxLength: 100
+          example: Requirements Studio
+        description:
+          type: string
+          description: Short description
+          maxLength: 200
+          example: Define and manage API requirements in plain text
+        icon:
+          type: string
+          description: Lucide icon name
+          minLength: 1
+          maxLength: 50
+          example: FileText
+        route:
+          type: string
+          description: Navigation route path
+          pattern: '^/app/[a-z][a-z0-9-/]*$'
+          example: /app/requirements
+        enabled:
+          type: boolean
+          description: Whether module is accessible
+          example: true
+        order:
+          type: integer
+          description: Display order
+          minimum: 1
+          maximum: 100
+          example: 1
+        badge:
+          type: string
+          description: Optional badge text
+          maxLength: 20
+          example: New
+
+    ModuleResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/Module'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    ModuleListResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Module'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    # Auth schemas
+    ThemeMode:
+      type: string
+      enum:
+        - light
+        - dark
+        - system
+      description: Theme preference
+
+    UserPreferences:
+      type: object
+      properties:
+        theme:
+          $ref: '#/components/schemas/ThemeMode'
+
+    User:
+      type: object
+      description: User information
+      required:
+        - id
+        - userId
+        - name
+        - email
+        - isAuthenticated
+        - preferences
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Session ID
+          example: session-001
+        userId:
+          type: string
+          description: User identifier
+          example: user-001
+        name:
+          type: string
+          description: Display name
+          minLength: 1
+          maxLength: 100
+          example: Test User
+        email:
+          type: string
+          format: email
+          description: Email address
+          example: test@example.com
+        isAuthenticated:
+          type: boolean
+          description: Authentication status
+          example: true
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
+        createdAt:
+          type: string
+          format: date-time
+          description: Session creation timestamp
+
+    UserResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    LoginRequest:
+      type: object
+      description: Login credentials (mocked)
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email
+          example: test@example.com
+        password:
+          type: string
+          format: password
+          description: User password
+          minLength: 1
+          example: password123
+
+    LoginData:
+      type: object
+      required:
+        - user
+        - token
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          description: Bearer token
+          example: mock-token-12345
+
+    LoginResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/LoginData'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
+
+    LogoutData:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Logout confirmation
+          example: Successfully logged out
+
+    LogoutResponse:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          $ref: '#/components/schemas/LogoutData'
+        meta:
+          $ref: '#/components/schemas/ApiMeta'
