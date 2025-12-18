@@ -299,6 +299,8 @@ async def apply_transaction(
     """
     Apply a transaction to a specification.
 
+    Records the transaction in the undo/redo service for history tracking.
+
     Args:
         spec_id: Specification ID
         request: Transaction to apply
@@ -308,6 +310,15 @@ async def apply_transaction(
     """
     transaction_id = uuid4()
     now = datetime.utcnow()
+
+    # Record the transaction in undo/redo service
+    _undo_redo_service.record_edit(
+        spec_id=spec_id,
+        edit_path=request.edit_path,
+        old_value=request.old_value,
+        new_value=request.new_value,
+        change_type=request.change_type,
+    )
 
     return TransactionResponse(
         transaction_id=transaction_id,
