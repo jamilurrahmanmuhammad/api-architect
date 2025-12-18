@@ -18,3 +18,4 @@ export { SaveIndicator, type SaveIndicatorProps } from "./SaveIndicator";
 export { ApiInfoTab, type ApiInfoTabProps } from "./tabs";
 export { ModelsTab, type ModelsTabProps } from "./tabs";
 export { FieldEditor, type FieldEditorProps } from "./tabs";
+export { OperationsTab, type OperationsTabProps } from "./tabs";
