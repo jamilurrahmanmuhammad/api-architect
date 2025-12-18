@@ -239,6 +239,60 @@ class ErrorResponse(BaseModel):
 
 
 # ============================================================================
+# Import Workflow Models
+# ============================================================================
+
+
+class ImportErrorDetail(BaseModel):
+    """Details about an import error."""
+
+    code: str = Field(..., description="Error code")
+    message: str = Field(..., description="Error message")
+    details: Optional[Dict[str, Any]] = Field(None, description="Additional error details")
+
+
+class ImportStatistics(BaseModel):
+    """Statistics from an import operation."""
+
+    rows_imported: int = Field(default=0, description="Number of CSV rows imported")
+    paths_added: int = Field(default=0, description="Number of API paths added")
+    paths_updated: int = Field(default=0, description="Number of API paths updated")
+    schemas_added: int = Field(default=0, description="Number of schemas added")
+    schemas_updated: int = Field(default=0, description="Number of schemas updated")
+
+
+class ImportResult(BaseModel):
+    """Result of an import operation."""
+
+    spec_id: UUID = Field(..., description="Specification ID")
+    success: bool = Field(..., description="Whether import succeeded")
+    source: str = Field(..., description="Import source (csv, oas, yaml, json)")
+    message: str = Field(..., description="Summary message")
+    errors: List[ImportErrorDetail] = Field(default_factory=list, description="List of errors if any")
+    stats: ImportStatistics = Field(..., description="Import statistics")
+    timestamp: datetime = Field(..., description="Import timestamp")
+
+
+class CSVImportRequest(BaseModel):
+    """Request to import CSV file."""
+
+    csv_content: str = Field(..., description="CSV file content")
+    spec_id: UUID = Field(..., description="Specification ID")
+    api_title: Optional[str] = Field(None, description="API title for new specs")
+    profile: str = Field(default="basic", description="CSV profile (basic, advanced, technical, expert)")
+    merge: bool = Field(default=False, description="Whether to merge with existing spec")
+
+
+class OASImportRequest(BaseModel):
+    """Request to import OAS file."""
+
+    oas_content: str = Field(..., description="OAS file content")
+    spec_id: UUID = Field(..., description="Specification ID")
+    content_format: str = Field(default="json", description="Content format (json or yaml)")
+    merge: bool = Field(default=False, description="Whether to merge with existing spec")
+
+
+# ============================================================================
 # Health Check Models
 # ============================================================================
 
