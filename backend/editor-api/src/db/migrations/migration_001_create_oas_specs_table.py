@@ -200,6 +200,91 @@ class OASEditTransaction(Base):
         return f"<OASEditTransaction {self.id} {self.edit_path}>"
 
 
+class UndoRedoTransaction(Base):
+    """
+    Undo/Redo transaction history for a specification.
+
+    Stores all transaction history with ordering for undo/redo stacks.
+    Includes stack position tracking for efficient queries.
+    """
+
+    __tablename__ = "undo_redo_transactions"
+
+    # Primary key
+    id = Column(
+        GUID(),
+        primary_key=True,
+        default=uuid.uuid4,
+        nullable=False,
+    )
+
+    # Reference to specification
+    spec_id = Column(
+        GUID(),
+        nullable=False,
+        index=True,
+    )
+
+    # Transaction details
+    edit_path = Column(
+        String(500),
+        nullable=False,
+    )
+
+    old_value = Column(
+        Text,
+        nullable=True,
+    )
+
+    new_value = Column(
+        Text,
+        nullable=True,
+    )
+
+    change_type = Column(
+        String(20),
+        default="update",
+        nullable=False,
+    )
+
+    # Ordering for undo/redo stack
+    # Higher sequence_number = more recent
+    sequence_number = Column(
+        Integer,
+        nullable=False,
+        index=True,
+    )
+
+    # Timestamps
+    timestamp = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+        index=True,
+    )
+
+    # Optional metadata
+    edited_by = Column(
+        String(255),
+        nullable=True,
+    )
+
+    session_id = Column(
+        String(255),
+        nullable=True,
+    )
+
+    # Indexes for common queries
+    __table_args__ = (
+        Index('idx_undo_spec_sequence', 'spec_id', 'sequence_number'),
+        Index('idx_undo_spec_timestamp', 'spec_id', 'timestamp'),
+        Index('idx_undo_spec_path', 'spec_id', 'edit_path'),
+    )
+
+    def __repr__(self):
+        return f"<UndoRedoTransaction {self.id} seq={self.sequence_number}>"
+
+
 def get_migration_script() -> str:
     """Return SQL migration script for creating tables."""
     return """
@@ -249,4 +334,24 @@ def get_migration_script() -> str:
     CREATE INDEX idx_edited_by ON oas_edit_transactions(edited_by);
     CREATE INDEX idx_spec_timestamp ON oas_edit_transactions(spec_id, timestamp);
     CREATE INDEX idx_spec_path ON oas_edit_transactions(spec_id, edit_path);
+
+    -- Undo/Redo Transactions Table
+    CREATE TABLE IF NOT EXISTS undo_redo_transactions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        spec_id UUID NOT NULL,
+        edit_path VARCHAR(500) NOT NULL,
+        old_value TEXT,
+        new_value TEXT,
+        change_type VARCHAR(20) DEFAULT 'update' NOT NULL,
+        sequence_number INTEGER NOT NULL,
+        timestamp TIMESTAMP DEFAULT NOW() NOT NULL,
+        edited_by VARCHAR(255),
+        session_id VARCHAR(255)
+    );
+
+    -- Indexes for Undo/Redo Transactions
+    CREATE INDEX idx_spec_id_undo ON undo_redo_transactions(spec_id);
+    CREATE INDEX idx_spec_sequence ON undo_redo_transactions(spec_id, sequence_number);
+    CREATE INDEX idx_spec_timestamp_undo ON undo_redo_transactions(spec_id, timestamp);
+    CREATE INDEX idx_spec_path_undo ON undo_redo_transactions(spec_id, edit_path);
     """

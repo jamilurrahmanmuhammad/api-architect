@@ -8,9 +8,10 @@ Feature 004 - Form-Based OpenAPI Builder
 """
 
 from typing import Optional, Dict, Any
-from fastapi import APIRouter, HTTPException, Query, Body
+from fastapi import APIRouter, HTTPException, Query, Body, Depends
 from uuid import UUID, uuid4
 from datetime import datetime
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.oas_models import (
     CreateSpecificationRequest,
@@ -43,6 +44,8 @@ from src.api.oas_models import (
     UndoRedoClearResponse,
 )
 from src.services.undo_redo_service import UndoRedoService, StackEntry
+from src.db.undo_redo_repository import UndoRedoRepository
+from src.db.database import get_db
 
 # Create router and initialize services
 router = APIRouter(tags=["OAS Specifications"])
@@ -295,15 +298,18 @@ async def export_specification(
 async def apply_transaction(
     spec_id: UUID,
     request: TransactionRequest,
+    session: AsyncSession = Depends(get_db),
 ) -> TransactionResponse:
     """
     Apply a transaction to a specification.
 
     Records the transaction in the undo/redo service for history tracking.
+    Persists transaction to database for audit trail and recovery.
 
     Args:
         spec_id: Specification ID
         request: Transaction to apply
+        session: Database session for persistence
 
     Returns:
         Applied transaction
@@ -311,14 +317,31 @@ async def apply_transaction(
     transaction_id = uuid4()
     now = datetime.utcnow()
 
-    # Record the transaction in undo/redo service
-    _undo_redo_service.record_edit(
-        spec_id=spec_id,
-        edit_path=request.edit_path,
-        old_value=request.old_value,
-        new_value=request.new_value,
-        change_type=request.change_type,
-    )
+    # Create repository for database persistence
+    try:
+        repository = UndoRedoRepository(session)
+
+        # Record the transaction with database persistence
+        await _undo_redo_service.record_edit_with_db(
+            spec_id=spec_id,
+            edit_path=request.edit_path,
+            old_value=request.old_value,
+            new_value=request.new_value,
+            change_type=request.change_type,
+            repository=repository,
+        )
+
+        # Commit the database transaction
+        await session.commit()
+    except Exception:
+        # Fall back to in-memory persistence if database is not available
+        _undo_redo_service.record_edit(
+            spec_id=spec_id,
+            edit_path=request.edit_path,
+            old_value=request.old_value,
+            new_value=request.new_value,
+            change_type=request.change_type,
+        )
 
     return TransactionResponse(
         transaction_id=transaction_id,

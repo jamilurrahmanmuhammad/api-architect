@@ -7,6 +7,7 @@ Provides undo/redo stack management for OAS specifications:
 - State query and history retrieval
 - Per-specification history tracking
 - Automatic stack size management
+- Optional database persistence
 
 Feature 004 - Form-Based OpenAPI Builder
 """
@@ -15,6 +16,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class StackEntry(BaseModel):
@@ -127,18 +129,20 @@ class UndoRedoService:
     Manages undo/redo operations for OAS specifications.
 
     Maintains separate undo/redo stacks per specification with a maximum
-    of 20 entries per stack.
+    of 20 entries per stack. Optionally persists to database via repository.
     """
 
-    def __init__(self, max_stack_size: int = 20):
+    def __init__(self, max_stack_size: int = 20, repository: Optional[Any] = None):
         """
         Initialize UndoRedoService.
 
         Args:
             max_stack_size: Maximum size of undo stack (default: 20)
+            repository: Optional UndoRedoRepository for database persistence
         """
         self.max_stack_size = max_stack_size
         self._stacks: Dict[UUID, UndoRedoStack] = {}
+        self.repository = repository  # Optional database repository
 
     def _get_stack(self, spec_id: UUID) -> UndoRedoStack:
         """Get or create stack for spec."""
@@ -339,6 +343,162 @@ class UndoRedoService:
             Dictionary mapping spec IDs to their status
         """
         return {spec_id: self.get_undo_redo_status(spec_id) for spec_id in self._stacks}
+
+    # Async methods for database-backed operations
+    async def record_edit_with_db(
+        self,
+        spec_id: UUID,
+        edit_path: str,
+        old_value: Optional[str] = None,
+        new_value: Optional[str] = None,
+        change_type: str = "update",
+        edited_by: Optional[str] = None,
+        session_id: Optional[str] = None,
+        repository: Optional[Any] = None,
+    ) -> StackEntry:
+        """
+        Record an edit transaction with database persistence.
+
+        Args:
+            spec_id: Specification UUID
+            edit_path: JSONPointer path to edited field
+            old_value: Previous value
+            new_value: New value
+            change_type: Type of change (create, update, delete)
+            edited_by: User who made the edit
+            session_id: Session identifier
+            repository: Optional repository for database persistence
+
+        Returns:
+            StackEntry that was recorded
+        """
+        # Record in memory
+        entry = self.record_edit(
+            spec_id=spec_id,
+            edit_path=edit_path,
+            old_value=old_value,
+            new_value=new_value,
+            change_type=change_type,
+            edited_by=edited_by,
+            session_id=session_id,
+        )
+
+        # Persist to database if repository is available
+        repo = repository or self.repository
+        if repo is not None:
+            await repo.save_transaction(
+                spec_id=spec_id,
+                edit_path=edit_path,
+                old_value=old_value,
+                new_value=new_value,
+                change_type=change_type,
+                edited_by=edited_by,
+                session_id=session_id,
+            )
+
+        return entry
+
+    async def load_history_from_db(self, spec_id: UUID) -> None:
+        """
+        Load undo/redo history from database into memory.
+
+        Loads the most recent transactions from the database into the in-memory stack.
+        Useful for session initialization or recovery.
+
+        Args:
+            spec_id: Specification UUID
+        """
+        if self.repository is None:
+            return
+
+        # Get the undo stack from database (max_size entries)
+        db_transactions = await self.repository.get_undo_stack(
+            spec_id, max_size=self.max_stack_size
+        )
+
+        # Clear current in-memory stack
+        stack = self._get_stack(spec_id)
+        stack.clear()
+
+        # Load from database into memory
+        for txn in db_transactions:
+            entry = StackEntry(
+                edit_path=txn.edit_path,
+                old_value=txn.old_value,
+                new_value=txn.new_value,
+                change_type=txn.change_type,
+                timestamp=txn.timestamp,
+                edited_by=txn.edited_by,
+                session_id=txn.session_id,
+            )
+            stack.undo_stack.append(entry)
+
+    async def clear_history_with_db(self, spec_id: UUID) -> None:
+        """
+        Clear undo/redo history from both memory and database.
+
+        Args:
+            spec_id: Specification UUID
+        """
+        # Clear from memory
+        self.clear_history(spec_id)
+
+        # Clear from database if repository is available
+        if self.repository is not None:
+            await self.repository.clear_history(spec_id)
+
+    async def get_history_from_db(
+        self, spec_id: UUID, limit: int = 100, offset: int = 0
+    ) -> tuple[List[Dict[str, Any]], int]:
+        """
+        Get transaction history from database with pagination.
+
+        Args:
+            spec_id: Specification UUID
+            limit: Maximum number of entries to retrieve
+            offset: Pagination offset
+
+        Returns:
+            Tuple of (history list, total count)
+        """
+        if self.repository is None:
+            return [], 0
+
+        db_transactions, total = await self.repository.get_history(
+            spec_id, limit=limit, offset=offset
+        )
+
+        # Convert to dictionary format
+        history = [
+            {
+                "edit_path": txn.edit_path,
+                "old_value": txn.old_value,
+                "new_value": txn.new_value,
+                "change_type": txn.change_type,
+                "timestamp": txn.timestamp,
+                "edited_by": txn.edited_by,
+                "session_id": txn.session_id,
+                "sequence_number": txn.sequence_number,
+            }
+            for txn in db_transactions
+        ]
+
+        return history, total
+
+    async def get_transaction_count_from_db(self, spec_id: UUID) -> int:
+        """
+        Get transaction count from database.
+
+        Args:
+            spec_id: Specification UUID
+
+        Returns:
+            Number of transactions in database for this spec
+        """
+        if self.repository is None:
+            return 0
+
+        return await self.repository.get_transaction_count(spec_id)
 
 
 # Convenient imports

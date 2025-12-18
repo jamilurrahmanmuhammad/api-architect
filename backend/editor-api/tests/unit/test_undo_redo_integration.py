@@ -11,19 +11,36 @@ Feature 004 - Form-Based OpenAPI Builder
 """
 
 import pytest
+import pytest_asyncio
 from uuid import uuid4
 from datetime import datetime
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock, MagicMock
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.api.oas_routes import router
+from src.db import database as db_module
 
 
 @pytest.fixture
-def client():
-    """Create a test client."""
+def mock_session():
+    """Create a mock database session."""
+    session = AsyncMock(spec=AsyncSession)
+    return session
+
+
+@pytest.fixture
+def client(mock_session):
+    """Create a test client with mocked database."""
     app = FastAPI()
     app.include_router(router, prefix="/api/oas")
+
+    # Override the get_db dependency with a mock
+    async def mock_get_db():
+        yield mock_session
+
+    app.dependency_overrides[db_module.get_db] = mock_get_db
     return TestClient(app)
 
 
