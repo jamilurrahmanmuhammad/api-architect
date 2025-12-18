@@ -12,3 +12,4 @@ export {
   type ProfileGateProps,
   type ProfileLevel,
 } from "./ProfileGate";
+export { SaveIndicator, type SaveIndicatorProps } from "./SaveIndicator";
