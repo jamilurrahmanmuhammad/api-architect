@@ -36,10 +36,17 @@ from src.api.oas_models import (
     ImportStatistics,
     ImportResult as ImportResultModel,
     OASImportRequest,
+    TransactionEntry,
+    UndoRedoStatusResponse,
+    UndoRedoHistoryResponse,
+    UndoRedoTransactionResponse,
+    UndoRedoClearResponse,
 )
+from src.services.undo_redo_service import UndoRedoService, StackEntry
 
-# Create router
+# Create router and initialize services
 router = APIRouter(tags=["OAS Specifications"])
+_undo_redo_service = UndoRedoService(max_stack_size=20)
 
 
 # ============================================================================
@@ -562,6 +569,169 @@ async def import_oas_workflow(request: OASImportRequest) -> ImportResultModel:
 
 
 # ============================================================================
+# Undo/Redo Operations
+# ============================================================================
+
+
+@router.post("/specs/{spec_id}/undo", response_model=UndoRedoTransactionResponse)
+async def undo_operation(spec_id: UUID) -> UndoRedoTransactionResponse:
+    """
+    Undo the last edit for a specification.
+
+    Args:
+        spec_id: Specification ID
+
+    Returns:
+        Transaction that was undone
+    """
+    transaction = _undo_redo_service.undo(spec_id)
+
+    if transaction is None:
+        return UndoRedoTransactionResponse(
+            spec_id=spec_id,
+            success=False,
+            transaction=None,
+            message="No undo history available",
+        )
+
+    # Convert StackEntry to TransactionEntry
+    entry = TransactionEntry(
+        edit_path=transaction.edit_path,
+        old_value=transaction.old_value,
+        new_value=transaction.new_value,
+        change_type=transaction.change_type,
+        timestamp=transaction.timestamp,
+        edited_by=transaction.edited_by,
+        session_id=transaction.session_id,
+    )
+
+    return UndoRedoTransactionResponse(
+        spec_id=spec_id,
+        success=True,
+        transaction=entry,
+        message=f"Undo successful for {transaction.edit_path}",
+    )
+
+
+@router.post("/specs/{spec_id}/redo", response_model=UndoRedoTransactionResponse)
+async def redo_operation(spec_id: UUID) -> UndoRedoTransactionResponse:
+    """
+    Redo the last undone edit for a specification.
+
+    Args:
+        spec_id: Specification ID
+
+    Returns:
+        Transaction that was redone
+    """
+    transaction = _undo_redo_service.redo(spec_id)
+
+    if transaction is None:
+        return UndoRedoTransactionResponse(
+            spec_id=spec_id,
+            success=False,
+            transaction=None,
+            message="No redo history available",
+        )
+
+    # Convert StackEntry to TransactionEntry
+    entry = TransactionEntry(
+        edit_path=transaction.edit_path,
+        old_value=transaction.old_value,
+        new_value=transaction.new_value,
+        change_type=transaction.change_type,
+        timestamp=transaction.timestamp,
+        edited_by=transaction.edited_by,
+        session_id=transaction.session_id,
+    )
+
+    return UndoRedoTransactionResponse(
+        spec_id=spec_id,
+        success=True,
+        transaction=entry,
+        message=f"Redo successful for {transaction.edit_path}",
+    )
+
+
+@router.get("/specs/{spec_id}/undo-redo/status", response_model=UndoRedoStatusResponse)
+async def get_undo_redo_status(spec_id: UUID) -> UndoRedoStatusResponse:
+    """
+    Get undo/redo status for a specification.
+
+    Args:
+        spec_id: Specification ID
+
+    Returns:
+        Current undo/redo status
+    """
+    status = _undo_redo_service.get_undo_redo_status(spec_id)
+
+    return UndoRedoStatusResponse(
+        spec_id=spec_id,
+        can_undo=status["can_undo"],
+        can_redo=status["can_redo"],
+        undo_stack_size=status["undo_stack_size"],
+        redo_stack_size=status["redo_stack_size"],
+        max_stack_size=status["max_stack_size"],
+    )
+
+
+@router.get(
+    "/specs/{spec_id}/undo-redo/history", response_model=UndoRedoHistoryResponse
+)
+async def get_undo_redo_history(
+    spec_id: UUID,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+) -> UndoRedoHistoryResponse:
+    """
+    Get undo/redo history for a specification.
+
+    Args:
+        spec_id: Specification ID
+        limit: Maximum number of entries
+        offset: Pagination offset
+
+    Returns:
+        Complete history of transactions
+    """
+    history_entries = _undo_redo_service.get_history(spec_id)
+
+    # Convert StackEntry objects to TransactionEntry objects
+    transactions = [
+        TransactionEntry(
+            edit_path=entry.edit_path,
+            old_value=entry.old_value,
+            new_value=entry.new_value,
+            change_type=entry.change_type,
+            timestamp=entry.timestamp,
+            edited_by=entry.edited_by,
+            session_id=entry.session_id,
+        )
+        for entry in history_entries[offset : offset + limit]
+    ]
+
+    return UndoRedoHistoryResponse(
+        spec_id=spec_id,
+        history=transactions,
+        total=len(history_entries),
+        limit=limit,
+        offset=offset,
+    )
+
+
+@router.delete("/specs/{spec_id}/undo-redo/history", status_code=204)
+async def clear_undo_redo_history(spec_id: UUID) -> None:
+    """
+    Clear all undo/redo history for a specification.
+
+    Args:
+        spec_id: Specification ID
+    """
+    _undo_redo_service.clear_history(spec_id)
+
+
+# ============================================================================
 # Health Check
 # ============================================================================
 
@@ -582,5 +752,6 @@ async def health_check() -> Dict[str, Any]:
             "validator": "ok",
             "document_generator": "ok",
             "import_workflow": "ok",
+            "undo_redo": "ok",
         },
     }

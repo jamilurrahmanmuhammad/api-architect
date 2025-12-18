@@ -293,6 +293,61 @@ class OASImportRequest(BaseModel):
 
 
 # ============================================================================
+# Undo/Redo Models
+# ============================================================================
+
+
+class TransactionEntry(BaseModel):
+    """A single transaction in undo/redo history."""
+
+    edit_path: str = Field(..., description="JSONPointer path to edited field")
+    old_value: Optional[str] = Field(None, description="Previous value")
+    new_value: Optional[str] = Field(None, description="New value")
+    change_type: str = Field(default="update", description="Type: create, update, delete")
+    timestamp: datetime = Field(..., description="Edit timestamp")
+    edited_by: Optional[str] = Field(None, description="User who made the edit")
+    session_id: Optional[str] = Field(None, description="Session identifier")
+
+
+class UndoRedoStatusResponse(BaseModel):
+    """Response for undo/redo status query."""
+
+    spec_id: UUID = Field(..., description="Specification ID")
+    can_undo: bool = Field(..., description="Whether undo is available")
+    can_redo: bool = Field(..., description="Whether redo is available")
+    undo_stack_size: int = Field(..., description="Current undo stack size")
+    redo_stack_size: int = Field(..., description="Current redo stack size")
+    max_stack_size: int = Field(..., description="Maximum stack size limit")
+
+
+class UndoRedoHistoryResponse(BaseModel):
+    """Response for undo/redo history query."""
+
+    spec_id: UUID = Field(..., description="Specification ID")
+    history: List[TransactionEntry] = Field(..., description="Transaction history")
+    total: int = Field(..., description="Total transactions in history")
+    limit: Optional[int] = Field(None, description="Pagination limit")
+    offset: Optional[int] = Field(None, description="Pagination offset")
+
+
+class UndoRedoTransactionResponse(BaseModel):
+    """Response for undo/redo operations."""
+
+    spec_id: UUID = Field(..., description="Specification ID")
+    success: bool = Field(..., description="Whether operation succeeded")
+    transaction: Optional[TransactionEntry] = Field(None, description="Transaction that was undone/redone")
+    message: str = Field(..., description="Operation result message")
+
+
+class UndoRedoClearResponse(BaseModel):
+    """Response for clearing undo/redo history."""
+
+    spec_id: UUID = Field(..., description="Specification ID")
+    success: bool = Field(..., description="Whether operation succeeded")
+    message: str = Field(..., description="Operation result message")
+
+
+# ============================================================================
 # Health Check Models
 # ============================================================================
 
