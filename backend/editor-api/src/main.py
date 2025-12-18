@@ -2,16 +2,36 @@
 FastAPI application entry point for Requirements Grammar Authoring Studio.
 
 Provides core endpoints for file management, parsing, validation, and export.
+Includes CORS, structured logging, error handling, and database lifecycle.
 """
 
+import os
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from src.api.routes import auth, modules
+from src.api.routes import auth, files, modules, parse, validate, export
+from src.db.database import init_db, cleanup_db
+from src.middleware.error_handler import setup_error_handlers
+from src.utils.logging import setup_logging, get_logger
+
+# Initialize logging before app creation
+_environment = os.getenv("ENVIRONMENT", "development")
+_log_level = os.getenv("LOG_LEVEL", "INFO")
+_use_json = os.getenv("LOG_FORMAT", "json").lower() == "json"
+
+setup_logging(
+    level=_log_level,
+    environment=_environment,
+    use_json=_use_json and _environment != "development",
+)
+
+logger = get_logger(__name__)
+
 
 # Application lifecycle management
 @asynccontextmanager
@@ -29,12 +49,29 @@ async def lifespan(app: FastAPI):
     - Flush metrics and logs
     """
     # Startup
-    print("🚀 Starting API Architect Editor API...")
+    logger.info(
+        "Starting API Architect Editor API",
+        environment=_environment,
+        version="0.1.0",
+    )
+
+    try:
+        await init_db()
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+        # Continue startup even if DB init fails (for health checks)
 
     yield
 
     # Shutdown
-    print("🛑 Shutting down API Architect Editor API...")
+    logger.info("Shutting down API Architect Editor API")
+
+    try:
+        await cleanup_db()
+        logger.info("Database connections closed")
+    except Exception as e:
+        logger.error(f"Error during database cleanup: {e}")
 
 
 # Create FastAPI application with async support
@@ -47,6 +84,9 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     lifespan=lifespan,
 )
+
+# Setup error handlers and request ID middleware
+setup_error_handlers(app)
 
 # CORS middleware configuration
 # Allow requests from frontend during development and production
@@ -66,7 +106,11 @@ app.add_middleware(
 
 # Register API routes
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(files.router, prefix="/api/v1")
 app.include_router(modules.router, prefix="/api/v1")
+app.include_router(validate.router, prefix="/api/v1")
+app.include_router(parse.router, prefix="/api/v1")
+app.include_router(export.router, prefix="/api/v1")
 
 
 # Health check endpoint
@@ -76,13 +120,56 @@ async def health_check() -> dict[str, Any]:
     Health check endpoint for Kubernetes liveness/readiness probes.
 
     Returns:
-        dict: Status indicator and timestamp
+        dict: Status indicator, service info, and timestamp
     """
     return {
         "status": "healthy",
         "service": "api-architect-editor-api",
         "version": "0.1.0",
+        "environment": _environment,
+        "timestamp": datetime.now(UTC).isoformat(),
     }
+
+
+# Readiness check endpoint (includes database connectivity)
+@app.get("/ready")
+async def readiness_check() -> dict[str, Any]:
+    """
+    Readiness check endpoint for Kubernetes readiness probes.
+
+    Checks database connectivity before declaring ready.
+
+    Returns:
+        dict: Status indicator with dependency checks
+    """
+    checks = {
+        "database": "unknown",
+    }
+
+    # Check database connectivity
+    try:
+        from sqlalchemy import text
+        from src.db.database import async_session_factory
+        async with async_session_factory() as session:
+            await session.execute(text("SELECT 1"))
+            checks["database"] = "healthy"
+    except Exception as e:
+        checks["database"] = f"unhealthy: {str(e)}"
+
+    # Determine overall status
+    all_healthy = all(v == "healthy" for v in checks.values())
+    status_code = 200 if all_healthy else 503
+
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "status": "ready" if all_healthy else "not_ready",
+            "service": "api-architect-editor-api",
+            "version": "0.1.0",
+            "checks": checks,
+            "timestamp": datetime.now(UTC).isoformat(),
+        },
+    )
 
 
 # Root endpoint
@@ -98,25 +185,8 @@ async def root() -> dict[str, str]:
         "name": "API Architect Editor API",
         "version": "0.1.0",
         "docs": "/api/docs",
+        "environment": _environment,
     }
-
-
-# Global error handler
-@app.exception_handler(Exception)
-async def global_exception_handler(request, exc):
-    """
-    Global exception handler for unhandled errors.
-
-    Logs error and returns standardized error response.
-    """
-    print(f"Unhandled exception: {exc}")
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error": "Internal Server Error",
-            "detail": str(exc),
-        },
-    )
 
 
 if __name__ == "__main__":

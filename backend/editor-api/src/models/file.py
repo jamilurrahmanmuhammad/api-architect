@@ -12,8 +12,7 @@ Uses declarative base and UUID primary keys for distributed systems.
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from sqlalchemy import String, Text, Integer, DateTime, ForeignKey, Enum, Boolean
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import String, Text, Integer, DateTime, ForeignKey, Enum, Boolean, Uuid
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing import Optional
 
@@ -57,7 +56,7 @@ class RequirementFile(Base):
 
     __tablename__ = "requirement_files"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[str] = mapped_column(Uuid, primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
@@ -71,7 +70,7 @@ class RequirementFile(Base):
         default=lambda: datetime.now(UTC),
         onupdate=lambda: datetime.now(UTC),
     )
-    created_by: Mapped[Optional[str]] = mapped_column(UUID(as_uuid=True), nullable=True)
+    created_by: Mapped[Optional[str]] = mapped_column(Uuid, nullable=True)
     parsed_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
@@ -122,9 +121,9 @@ class Service(Base):
 
     __tablename__ = "services"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[str] = mapped_column(Uuid, primary_key=True, default=uuid4)
     file_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("requirement_files.id"), nullable=False, index=True
+        Uuid, ForeignKey("requirement_files.id"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     title: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
@@ -170,9 +169,9 @@ class Model(Base):
 
     __tablename__ = "models"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[str] = mapped_column(Uuid, primary_key=True, default=uuid4)
     file_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("requirement_files.id"), nullable=False, index=True
+        Uuid, ForeignKey("requirement_files.id"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
@@ -212,9 +211,9 @@ class EntityField(Base):
 
     __tablename__ = "entity_fields"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[str] = mapped_column(Uuid, primary_key=True, default=uuid4)
     model_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("models.id"), nullable=False, index=True
+        Uuid, ForeignKey("models.id"), nullable=False, index=True
     )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -257,21 +256,21 @@ class Operation(Base):
 
     __tablename__ = "operations"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[str] = mapped_column(Uuid, primary_key=True, default=uuid4)
     file_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("requirement_files.id"), nullable=False, index=True
+        Uuid, ForeignKey("requirement_files.id"), nullable=False, index=True
     )
     service_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("services.id"), nullable=False, index=True
+        Uuid, ForeignKey("services.id"), nullable=False, index=True
     )
     method: Mapped[str] = mapped_column(String(10), nullable=False)
     path: Mapped[str] = mapped_column(String(255), nullable=False)
     summary: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     request_model_id: Mapped[Optional[str]] = mapped_column(
-        UUID(as_uuid=True), nullable=True
+        Uuid, nullable=True
     )
     response_model_id: Mapped[Optional[str]] = mapped_column(
-        UUID(as_uuid=True), nullable=True
+        Uuid, nullable=True
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
@@ -307,9 +306,9 @@ class Error(Base):
 
     __tablename__ = "errors"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[str] = mapped_column(Uuid, primary_key=True, default=uuid4)
     file_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("requirement_files.id"), nullable=False, index=True
+        Uuid, ForeignKey("requirement_files.id"), nullable=False, index=True
     )
     status_code: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)

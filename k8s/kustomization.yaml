@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: api-architect
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secrets.yaml
+  - editor-api/deployment.yaml
+  - editor-api/service.yaml
+  - frontend/deployment.yaml
+  - frontend/service.yaml
+  - ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/version: "0.1.0"
+
+images:
+  - name: api-architect/editor-api
+    newTag: latest
+  - name: api-architect/frontend
+    newTag: latest

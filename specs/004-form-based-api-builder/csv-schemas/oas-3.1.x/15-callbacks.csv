@@ -1,0 +1,6 @@
+callback_name*,expression*,method*,summary,description,request_body_ref,response_status,response_description,oas_path
+onPetCreated,{$request.body#/callbackUrl}/pets,post,Pet creation notification,Called when a new pet is created,@model:Pet,200,Callback processed successfully,"components.callbacks.onPetCreated"
+onOrderStatusChange,{$request.body#/statusCallbackUrl},post,Order status change,Called when order status changes,@model:Order,200,Status update acknowledged,"components.callbacks.onOrderStatusChange"
+onUserRegistration,{$request.body#/webhookUrl}/users,post,User registration callback,Called when a new user registers,@model:User,200,Registration callback received,"components.callbacks.onUserRegistration"
+onPaymentComplete,{$request.query.callbackUrl},post,Payment completion,Called when payment is processed,,200,Payment notification received,"components.callbacks.onPaymentComplete"
+onDeliveryUpdate,{$request.header.X-Callback-Url}/delivery,put,Delivery update,Called when delivery status changes,@model:Order,200,Delivery update received,"components.callbacks.onDeliveryUpdate"

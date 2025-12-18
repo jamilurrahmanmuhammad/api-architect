@@ -1,0 +1,5 @@
+tag_name*,description,external_docs_url,external_docs_description,oas_path
+pets,Everything about your Pets,https://docs.example.com/pets,Find out more about pets,"tags[0]"
+store,Access to Petstore orders,,,tags[1]
+users,Operations about users,,,tags[2]
+webhooks,Webhook events for real-time updates,,,tags[3]

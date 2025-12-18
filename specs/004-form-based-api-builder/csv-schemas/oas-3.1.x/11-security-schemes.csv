@@ -1,0 +1,10 @@
+scheme_name*,type*,description,api_key_name,api_key_in,http_scheme,http_bearer_format,oauth2_flow_type,oauth2_auth_url,oauth2_token_url,oauth2_refresh_url,oauth2_scopes,openid_connect_url,oas_path
+api_key,apiKey,API Key authentication,X-API-Key,header,,,,,,,,"components.securitySchemes.api_key"
+bearer_auth,http,JWT Bearer token authentication,,,bearer,JWT,,,,,"components.securitySchemes.bearer_auth"
+basic_auth,http,HTTP Basic authentication,,,basic,,,,,,"components.securitySchemes.basic_auth"
+petstore_auth,oauth2,OAuth2 authentication,,,,implicit,https://petstore.example.com/oauth/authorize,,,write:pets=Modify pets;read:pets=Read pets,"components.securitySchemes.petstore_auth"
+oauth2_auth_code,oauth2,OAuth2 Authorization Code flow,,,,,authorizationCode,https://example.com/oauth/authorize,https://example.com/oauth/token,https://example.com/oauth/refresh,read=Read access;write=Write access;admin=Admin access,"components.securitySchemes.oauth2_auth_code"
+oauth2_client_creds,oauth2,OAuth2 Client Credentials flow,,,,,clientCredentials,,https://example.com/oauth/token,,service=Service access,"components.securitySchemes.oauth2_client_creds"
+oauth2_password,oauth2,OAuth2 Resource Owner Password flow,,,,,password,,https://example.com/oauth/token,https://example.com/oauth/refresh,read=Read;write=Write,"components.securitySchemes.oauth2_password"
+openid,openIdConnect,OpenID Connect authentication,,,,,,,,https://example.com/.well-known/openid-configuration,"components.securitySchemes.openid"
+mutual_tls,mutualTLS,Mutual TLS authentication (NEW in 3.1),,,,,,,,,,"components.securitySchemes.mutual_tls"

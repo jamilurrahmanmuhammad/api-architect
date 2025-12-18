@@ -9,6 +9,8 @@ import { Dashboard } from './pages/Dashboard';
 import { LoginPage } from './pages/LoginPage';
 import { NotFound } from './pages/NotFound';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
+import { FilesPage } from './pages/FilesPage';
+import { EditorPage } from './pages/EditorPage';
 
 // Module placeholder pages
 const ApiDesignModule = () => (
@@ -86,7 +88,30 @@ export const router = createBrowserRouter([
         path: 'testing',
         element: <TestingModule />,
       },
+      {
+        path: 'files',
+        element: <FilesPage />,
+      },
     ],
+  },
+
+  // Full-screen editor route (authenticated)
+  {
+    path: '/editor/:fileId',
+    element: (
+      <ProtectedRoute>
+        <EditorPage />
+      </ProtectedRoute>
+    ),
+  },
+  // Files list route (authenticated, standalone)
+  {
+    path: '/files',
+    element: (
+      <ProtectedRoute>
+        <FilesPage />
+      </ProtectedRoute>
+    ),
   },
 
   // Catch-all 404

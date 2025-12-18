@@ -55,40 +55,40 @@ This document breaks down the Requirements Grammar Authoring Studio implementati
 
 ### 2.1 Database Schema & ORM Models
 
-- [ ] T009 Create RequirementFile ORM model in `backend/editor-api/src/models/file.py` with unit tests
-- [ ] T010 [P] Create Service, Model, Operation, Error ORM models in `backend/editor-api/src/models/` (service.py, model.py, operation.py, error.py) with unit tests
-- [ ] T011 Create Alembic migration for RequirementFile table in `backend/editor-api/src/db/migrations/versions/001_initial.py`
+- [x] T009 Create RequirementFile ORM model in `backend/editor-api/src/models/file.py` with unit tests
+- [x] T010 [P] Create Service, Model, Operation, Error ORM models in `backend/editor-api/src/models/` (service.py, model.py, operation.py, error.py) with unit tests
+- [x] T011 Create Alembic migration for RequirementFile table in `backend/editor-api/src/db/migrations/versions/001_initial.py`
 
 ### 2.2 DSL Parser (Core Shared Component)
 
-- [ ] T012 Create DSL tokenizer/lexer in `backend/dsl-parser/src/lexer.py` with unit tests (tokenize markdown-based DSL syntax)
-- [ ] T013 Create hand-written recursive descent parser in `backend/dsl-parser/src/parser.py` with unit tests (parse Service, Model, Operation, Error definitions)
-- [ ] T014 [P] Create AST (Abstract Syntax Tree) node classes in `backend/dsl-parser/src/ast.py` for Service, Model, Operation, Error, Field
-- [ ] T015 [P] Create error reporting system in `backend/dsl-parser/src/errors.py` with line/column tracking and human-readable messages
+- [x] T012 Create DSL tokenizer/lexer in `backend/dsl-parser/src/lexer.py` with unit tests (tokenize markdown-based DSL syntax)
+- [x] T013 Create hand-written recursive descent parser in `backend/dsl-parser/src/parser.py` with unit tests (parse Service, Model, Operation, Error definitions)
+- [x] T014 [P] Create AST (Abstract Syntax Tree) node classes in `backend/dsl-parser/src/dsl_ast.py` for Service, Model, Operation, Error, Field
+- [x] T015 [P] Create error reporting system in `backend/dsl-parser/src/errors.py` with line/column tracking and human-readable messages
 
 ### 2.3 File Service (Backend)
 
-- [ ] T016 Create FileService in `backend/editor-api/src/services/file_service.py` with methods: create_file, get_file, list_files, update_file, delete_file (unit tests with mocked DB)
-- [ ] T017 Create file persistence layer in `backend/editor-api/src/db/repository.py` with CRUD operations (unit tests)
+- [x] T016 Create FileService in `backend/editor-api/src/services/file_service.py` with methods: create_file, get_file, list_files, update_file, delete_file (unit tests with mocked DB)
+- [x] T017 Create file persistence layer in `backend/editor-api/src/db/repository.py` with CRUD operations (unit tests)
 
 ### 2.4 Backend API Setup
 
-- [ ] T018 Create FastAPI app entry point with CORS, middleware, health checks in `backend/editor-api/src/main.py` with tests
-- [ ] T019 Setup structured logging (JSON format) in `backend/editor-api/src/utils/logging.py` for observability
-- [ ] T020 [P] Create error handling middleware in `backend/editor-api/src/middleware/error_handler.py` with proper HTTP status codes and error responses
+- [x] T018 Create FastAPI app entry point with CORS, middleware, health checks in `backend/editor-api/src/main.py` with tests
+- [x] T019 Setup structured logging (JSON format) in `backend/editor-api/src/utils/logging.py` for observability
+- [x] T020 [P] Create error handling middleware in `backend/editor-api/src/middleware/error_handler.py` with proper HTTP status codes and error responses
 
 ### 2.5 Frontend API Client & State Management
 
-- [ ] T021 Create API client service in `frontend/src/services/editorApi.ts` with methods for file CRUD and parse operations (unit tests)
-- [ ] T022 [P] Setup Redux editor state management in `frontend/src/store/editorSlice.ts` for: current file, editor content, parse errors, preview data (unit tests)
-- [ ] T023 Create custom hooks: useFile (load/save), useParser (parsing), useAutoSave (auto-save logic) in `frontend/src/hooks/` (unit tests)
+- [x] T021 Create API client service in `frontend/src/hooks/useEditorApi.ts` with methods for file CRUD and parse operations (unit tests)
+- [x] T022 [P] Setup Redux editor state management in `frontend/src/store/slices/editorSlice.ts` for: current file, editor content, parse errors, preview data (unit tests)
+- [x] T023 Create custom hooks: useFile (load/save), useParser (parsing), useAutoSave (auto-save logic) in `frontend/src/hooks/` (unit tests)
 
 ### 2.6 Docker & Deployment Setup
 
-- [ ] T024 Create Dockerfile for FastAPI backend in `backend/editor-api/Dockerfile`
-- [ ] T025 [P] Create Dockerfile for React frontend in `frontend/Dockerfile`
-- [ ] T026 Create docker-compose.yaml for local development in `docker-compose.yaml` with editor-api, postgres, redis services
-- [ ] T027 Create Kubernetes manifests (Deployment, Service, ConfigMap) in `k8s/` for editor-api
+- [x] T024 Create Dockerfile for FastAPI backend in `backend/editor-api/Dockerfile`
+- [x] T025 [P] Create Dockerfile for React frontend in `frontend/Dockerfile`
+- [x] T026 Create docker-compose.yaml for local development in `docker-compose.yaml` with editor-api, postgres, redis services
+- [x] T027 Create Kubernetes manifests (Deployment, Service, ConfigMap) in `k8s/` for editor-api
 
 ---
 
@@ -100,35 +100,35 @@ This document breaks down the Requirements Grammar Authoring Studio implementati
 
 ### 3.1 Test Definitions (TDD)
 
-- [ ] T028 [US1] Write unit tests for DSL syntax acceptance in `backend/dsl-parser/tests/test_lexer_parser.py` (valid/invalid DSL samples)
-- [ ] T029 [US1] Write contract tests for Files API endpoints in `backend/editor-api/tests/contract/test_files_api.py` (GET, POST, PUT, DELETE /files)
-- [ ] T030 [US1] Write integration test for create → save → load flow in `backend/editor-api/tests/integration/test_file_workflow.py`
+- [x] T028 [US1] Write unit tests for DSL syntax acceptance in `backend/dsl-parser/tests/test_lexer_parser.py` (valid/invalid DSL samples)
+- [x] T029 [US1] Write contract tests for Files API endpoints in `backend/editor-api/tests/contract/test_files_api.py` (GET, POST, PUT, DELETE /files)
+- [x] T030 [US1] Write integration test for create → save → load flow in `backend/editor-api/tests/integration/test_file_workflow.py`
 
 ### 3.2 Backend: File CRUD Endpoints
 
-- [ ] T031 [US1] [P] Implement GET /files endpoint in `backend/editor-api/src/api/routes/files.py` with pagination and filtering
-- [ ] T032 [US1] [P] Implement POST /files endpoint for creating new requirement files with initial DSL content
-- [ ] T033 [US1] [P] Implement GET /files/{fileId} endpoint for retrieving a specific file content
-- [ ] T034 [US1] Implement PUT /files/{fileId} endpoint for updating file content and incrementing version
-- [ ] T035 [US1] Implement DELETE /files/{fileId} endpoint with soft delete (mark as deleted, don't remove)
+- [x] T031 [US1] [P] Implement GET /files endpoint in `backend/editor-api/src/api/routes/files.py` with pagination and filtering
+- [x] T032 [US1] [P] Implement POST /files endpoint for creating new requirement files with initial DSL content
+- [x] T033 [US1] [P] Implement GET /files/{fileId} endpoint for retrieving a specific file content
+- [x] T034 [US1] Implement PUT /files/{fileId} endpoint for updating file content and incrementing version
+- [x] T035 [US1] Implement DELETE /files/{fileId} endpoint with soft delete (mark as deleted, don't remove)
 
 ### 3.3 Frontend: Editor Component & File Manager
 
-- [ ] T036 [US1] [P] Create EditorPane component in `frontend/src/components/Editor/EditorPane.tsx` with Monaco Editor integration (syntax highlighting, line numbers, basic DSL theme)
-- [ ] T037 [US1] [P] Create FileManager component in `frontend/src/components/Editor/FileManager.tsx` with list, create, load, delete operations
-- [ ] T038 [US1] [P] Create FileListPage in `frontend/src/pages/FilesPage.tsx` showing all files with create/load options
-- [ ] T039 [US1] Create EditorPage layout in `frontend/src/pages/EditorPage.tsx` with Editor + FileManager panes
+- [x] T036 [US1] [P] Create EditorPane component in `frontend/src/components/Editor/EditorPane.tsx` with Monaco Editor integration (syntax highlighting, line numbers, basic DSL theme)
+- [x] T037 [US1] [P] Create FileManager component in `frontend/src/components/Editor/FileManager.tsx` with list, create, load, delete operations
+- [x] T038 [US1] [P] Create FileListPage in `frontend/src/pages/FilesPage.tsx` showing all files with create/load options
+- [x] T039 [US1] Create EditorPage layout in `frontend/src/pages/EditorPage.tsx` with Editor + FileManager panes
 
 ### 3.4 Frontend: Save & Persistence
 
-- [ ] T040 [US1] Implement save functionality (Ctrl+S) in EditorPane with dirty flag tracking in `frontend/src/hooks/useFile.ts`
-- [ ] T041 [US1] Implement auto-save (debounced, every 30 seconds) in `frontend/src/components/Editor/EditorPane.tsx`
-- [ ] T042 [US1] Handle unsaved changes warning when navigating away in `frontend/src/components/Editor/EditorPane.tsx`
+- [x] T040 [US1] Implement save functionality (Ctrl+S) in EditorPane with dirty flag tracking in `frontend/src/hooks/useFile.ts`
+- [x] T041 [US1] Implement auto-save (debounced, every 30 seconds) in `frontend/src/components/Editor/EditorPane.tsx`
+- [x] T042 [US1] Handle unsaved changes warning when navigating away in `frontend/src/components/Editor/EditorPane.tsx`
 
 ### 3.5 Integration Tests (US1)
 
-- [ ] T043 [US1] Write E2E test: Create file → Type DSL → Save → Reload in `frontend/tests/e2e/create_and_save.spec.ts` (Playwright)
-- [ ] T044 [US1] Write E2E test: File listing and switching in `frontend/tests/e2e/file_operations.spec.ts` (Playwright)
+- [x] T043 [US1] Write E2E test: Create file → Type DSL → Save → Reload in `frontend/tests/e2e/create_and_save.spec.ts` (Playwright)
+- [x] T044 [US1] Write E2E test: File listing and switching in `frontend/tests/e2e/file_operations.spec.ts` (Playwright)
 
 ---
 
@@ -140,31 +140,31 @@ This document breaks down the Requirements Grammar Authoring Studio implementati
 
 ### 4.1 Test Definitions (TDD)
 
-- [ ] T045 [US2] Write unit tests for DSL validator in `backend/dsl-parser/tests/test_validator.py` (syntax errors, missing fields, type mismatches)
-- [ ] T046 [US2] Write contract tests for POST /validate endpoint in `backend/editor-api/tests/contract/test_validate_api.py`
-- [ ] T047 [US2] Write frontend unit tests for error rendering in `frontend/tests/unit/ErrorPanel.test.tsx`
+- [x] T045 [US2] Write unit tests for DSL validator in `backend/dsl-parser/tests/test_validator.py` (syntax errors, missing fields, type mismatches)
+- [x] T046 [US2] Write contract tests for POST /validate endpoint in `backend/editor-api/tests/contract/test_validate_api.py`
+- [x] T047 [US2] Write frontend unit tests for error rendering in `frontend/tests/unit/ErrorPanel.test.tsx`
 
 ### 4.2 Backend: Validation & Error Reporting
 
-- [ ] T048 [US2] Create validator module in `backend/dsl-parser/src/validator.py` with rules: required fields, type checking, constraint validation
-- [ ] T049 [US2] [P] Implement POST /validate endpoint in `backend/editor-api/src/api/routes/validate.py` that performs syntax/semantic validation
-- [ ] T050 [US2] [P] Create ParseError class in `backend/dsl-parser/src/errors.py` with line, column, message, suggested_fix fields
+- [x] T048 [US2] Create validator module in `backend/dsl-parser/src/validator.py` with rules: required fields, type checking, constraint validation
+- [x] T049 [US2] [P] Implement POST /validate endpoint in `backend/editor-api/src/api/routes/validate.py` that performs syntax/semantic validation
+- [x] T050 [US2] [P] Create ParseError class in `backend/dsl-parser/src/errors.py` with line, column, message, suggested_fix fields
 
 ### 4.3 Frontend: Real-Time Validation via Polling/WebSocket
 
-- [ ] T051 [US2] [P] Create useValidator hook in `frontend/src/hooks/useValidator.ts` that calls POST /validate every 500ms (debounced)
-- [ ] T052 [US2] [P] Create ErrorPanel component in `frontend/src/components/Editor/ErrorPanel.tsx` to display validation errors with line highlighting
-- [ ] T053 [US2] Integrate ErrorPanel into EditorPane with live error display and hover tooltips
+- [x] T051 [US2] [P] Create useValidator hook in `frontend/src/hooks/useValidator.ts` that calls POST /validate every 500ms (debounced)
+- [x] T052 [US2] [P] Create ErrorPanel component in `frontend/src/components/Editor/ErrorPanel.tsx` to display validation errors with line highlighting
+- [x] T053 [US2] Integrate ErrorPanel into EditorPane with live error display and hover tooltips
 
 ### 4.4 Frontend: Syntax Highlighting
 
-- [ ] T054 [US2] [P] Define DSL syntax highlighting theme/grammar in `frontend/src/utils/dslTheme.ts` (keyword colors, string colors, comment colors)
-- [ ] T055 [US2] Configure Monaco Editor language mode for DSL in `frontend/src/components/Editor/EditorPane.tsx` with custom syntax rules
+- [x] T054 [US2] [P] Define DSL syntax highlighting theme/grammar in `frontend/src/utils/dslTheme.ts` (keyword colors, string colors, comment colors)
+- [x] T055 [US2] Configure Monaco Editor language mode for DSL in `frontend/src/components/Editor/EditorPane.tsx` with custom syntax rules
 
 ### 4.5 Integration Tests (US2)
 
-- [ ] T056 [US2] Write E2E test: Type invalid DSL → Errors appear in <500ms in `frontend/tests/e2e/real_time_validation.spec.ts` (Playwright)
-- [ ] T057 [US2] Write E2E test: Fix error → Error disappears in `frontend/tests/e2e/error_recovery.spec.ts` (Playwright)
+- [x] T056 [US2] Write E2E test: Type invalid DSL → Errors appear in <500ms in `frontend/tests/e2e/real_time_validation.spec.ts` (Playwright)
+- [x] T057 [US2] Write E2E test: Fix error → Error disappears in `frontend/tests/e2e/error_recovery.spec.ts` (Playwright)
 
 ---
 
@@ -176,38 +176,38 @@ This document breaks down the Requirements Grammar Authoring Studio implementati
 
 ### 5.1 Test Definitions (TDD)
 
-- [ ] T058 [US3] Write unit tests for parser output (ParsedRequirements) in `backend/dsl-parser/tests/test_parsed_output.py`
-- [ ] T059 [US3] Write contract tests for POST /parse endpoint in `backend/editor-api/tests/contract/test_parse_api.py`
-- [ ] T060 [US3] Write frontend tests for PreviewPane component in `frontend/tests/unit/PreviewPane.test.tsx`
+- [x] T058 [US3] Write unit tests for parser output (ParsedRequirements) in `backend/dsl-parser/tests/test_parsed_output.py`
+- [x] T059 [US3] Write contract tests for POST /parse endpoint in `backend/editor-api/tests/contract/test_parse_api.py`
+- [x] T060 [US3] Write frontend tests for PreviewPane component in `frontend/tests/unit/PreviewPane.test.tsx`
 
 ### 5.2 Backend: Parsing Endpoint
 
-- [ ] T061 [US3] Create parser service in `backend/editor-api/src/services/parser_service.py` using dsl-parser library
-- [ ] T062 [US3] Implement POST /parse endpoint in `backend/editor-api/src/api/routes/parse.py` that returns ParsedRequirements (services, models, operations, errors, parse_errors)
+- [x] T061 [US3] Create parser service in `backend/editor-api/src/services/parser_service.py` using dsl-parser library
+- [x] T062 [US3] Implement POST /parse endpoint in `backend/editor-api/src/api/routes/parse.py` that returns ParsedRequirements (services, models, operations, errors, parse_errors)
 
 ### 5.3 Frontend: Split-Pane Layout
 
-- [ ] T063 [US3] [P] Create SplitLayout component in `frontend/src/components/Editor/SplitLayout.tsx` with resizable divider (left: editor, right: preview)
-- [ ] T064 [US3] [P] Create PreviewPane component in `frontend/src/components/Editor/PreviewPane.tsx` to display parsed entities (Services, Models, Operations, Errors tabs)
-- [ ] T065 [US3] Integrate SplitLayout and PreviewPane into EditorPage layout
+- [x] T063 [US3] [P] Create SplitLayout component in `frontend/src/components/Editor/SplitLayout.tsx` with resizable divider (left: editor, right: preview)
+- [x] T064 [US3] [P] Create PreviewPane component in `frontend/src/components/Editor/PreviewPane.tsx` to display parsed entities (Services, Models, Operations, Errors tabs)
+- [x] T065 [US3] Integrate SplitLayout and PreviewPane into EditorPage layout
 
 ### 5.4 Frontend: Live Preview Updates
 
-- [ ] T066 [US3] Create useParser hook in `frontend/src/hooks/useParser.ts` that polls POST /parse every 1 second and updates preview
-- [ ] T067 [US3] Implement incremental preview rendering: show valid entities even if some sections unparseable (use parse_errors to mark invalid lines)
-- [ ] T068 [US3] Optimize parsing: debounce requests, cache results for unchanged content
+- [x] T066 [US3] Create useParser hook in `frontend/src/hooks/useParser.ts` that polls POST /parse every 1 second and updates preview
+- [x] T067 [US3] Implement incremental preview rendering: show valid entities even if some sections unparseable (use parse_errors to mark invalid lines)
+- [x] T068 [US3] Optimize parsing: debounce requests, cache results for unchanged content
 
 ### 5.5 Frontend: Bidirectional Selection
 
-- [ ] T069 [US3] [P] Implement editor selection highlighting (highlight DSL text for clicked preview entity) in `frontend/src/utils/editorSelection.ts`
-- [ ] T070 [US3] [P] Implement preview selection highlighting (highlight preview entity for selected DSL text) in `frontend/src/utils/previewSelection.ts`
-- [ ] T071 [US3] Integrate bidirectional selection into EditorPane and PreviewPane (click handlers, scroll-to-line)
+- [x] T069 [US3] [P] Implement editor selection highlighting (highlight DSL text for clicked preview entity) in `frontend/src/utils/editorSelection.ts`
+- [x] T070 [US3] [P] Implement preview selection highlighting (highlight preview entity for selected DSL text) in `frontend/src/utils/previewSelection.ts`
+- [x] T071 [US3] Integrate bidirectional selection into EditorPane and PreviewPane (click handlers, scroll-to-line)
 
 ### 5.6 Integration Tests (US3)
 
-- [ ] T072 [US3] Write E2E test: Type valid DSL → Preview appears in <1s in `frontend/tests/e2e/live_preview.spec.ts` (Playwright)
-- [ ] T073 [US3] Write E2E test: Bidirectional selection (click preview → editor highlights) in `frontend/tests/e2e/bidirectional_selection.spec.ts` (Playwright)
-- [ ] T074 [US3] Write E2E test: Incremental preview (invalid sections marked with errors) in `frontend/tests/e2e/incremental_parsing.spec.ts` (Playwright)
+- [x] T072 [US3] Write E2E test: Type valid DSL → Preview appears in <1s in `frontend/tests/e2e/live_preview.spec.ts` (Playwright)
+- [x] T073 [US3] Write E2E test: Bidirectional selection (click preview → editor highlights) in `frontend/tests/e2e/bidirectional_selection.spec.ts` (Playwright)
+- [x] T074 [US3] Write E2E test: Incremental preview (invalid sections marked with errors) in `frontend/tests/e2e/incremental_parsing.spec.ts` (Playwright)
 
 ---
 

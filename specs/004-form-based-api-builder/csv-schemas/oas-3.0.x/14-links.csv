@@ -1,0 +1,7 @@
+link_name*,operation_id,operation_ref,description,parameters,request_body,server_url,server_description,oas_path
+GetPetByPetId,getPetById,,Get the pet that was created,petId=$response.body#/id,,,,"components.links.GetPetByPetId"
+GetOrderByOrderId,getOrderById,,Get the order details,orderId=$response.body#/id,,,,"components.links.GetOrderByOrderId"
+GetUserByUsername,getUserByName,,Get user by their username,username=$response.body#/username,,,,"components.links.GetUserByUsername"
+UpdatePetStatus,updatePet,,Update the pet status,petId=$response.body#/id,$request.body,,,components.links.UpdatePetStatus
+DeletePet,deletePet,,Delete the created pet,petId=$response.body#/id,,,,"components.links.DeletePet"
+PlaceOrderForPet,placeOrder,,Place an order for this pet,,"{""petId"": ""$response.body#/id"", ""quantity"": 1}",,,components.links.PlaceOrderForPet

@@ -1,0 +1,6 @@
+operation_id*,description,required,content_type*,schema_ref,schema_type,encoding,oas_path
+createPet,Pet object to create,true,application/json,@model:Pet,,"paths./pets.post.requestBody"
+updatePet,Pet object with updates,true,application/json,@model:Pet,,"paths./pets/{petId}.put.requestBody"
+placeOrder,Order to place,true,application/json,@model:Order,,"paths./store/order.post.requestBody"
+createUser,User object to create,true,application/json,@model:User,,"paths./users.post.requestBody"
+updateUser,User object with updates,true,application/json,@model:User,,"paths./users/{username}.put.requestBody"

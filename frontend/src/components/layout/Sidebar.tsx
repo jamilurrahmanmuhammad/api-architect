@@ -14,6 +14,7 @@ import {
   Rocket,
   Menu,
   ChevronLeft,
+  FolderOpen,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -78,6 +79,29 @@ export function Sidebar() {
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto p-2">
+        {/* Files - Core Navigation */}
+        <NavLink
+          to="/files"
+          className={cn(
+            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors mb-2',
+            'hover:bg-accent hover:text-accent-foreground',
+            location.pathname === '/files' || location.pathname.startsWith('/editor')
+              ? 'bg-accent text-accent-foreground'
+              : 'text-muted-foreground'
+          )}
+          title={collapsed ? 'Files' : undefined}
+        >
+          <FolderOpen className="h-5 w-5 flex-shrink-0" />
+          {!collapsed && <span className="truncate">Files</span>}
+        </NavLink>
+
+        {/* Divider */}
+        {!collapsed && (
+          <div className="mb-2 border-b pb-2">
+            <span className="px-3 text-xs text-muted-foreground">Modules</span>
+          </div>
+        )}
+
         {isLoading ? (
           <div data-testid="sidebar-loading" className="space-y-2">
             {[1, 2, 3].map((i) => (
