@@ -4,3 +4,11 @@
  */
 
 export { FormField, type FormFieldProps, type SelectOption } from "./FormField";
+export {
+  ProfileGate,
+  useProfileGate,
+  meetsProfileRequirement,
+  PROFILE_INFO,
+  type ProfileGateProps,
+  type ProfileLevel,
+} from "./ProfileGate";
