@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from src.api.routes import auth, files, modules, parse, validate, export
+from src.api import oas_routes
 from src.db.database import init_db, cleanup_db
 from src.middleware.error_handler import setup_error_handlers
 from src.utils.logging import setup_logging, get_logger
@@ -111,6 +112,7 @@ app.include_router(modules.router, prefix="/api/v1")
 app.include_router(validate.router, prefix="/api/v1")
 app.include_router(parse.router, prefix="/api/v1")
 app.include_router(export.router, prefix="/api/v1")
+app.include_router(oas_routes.router, prefix="/api/oas")
 
 
 # Health check endpoint
