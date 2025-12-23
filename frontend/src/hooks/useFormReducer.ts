@@ -102,9 +102,9 @@ export function formReducer(state: FormState, action: FormAction): FormState {
         return state;
       }
 
-      // Pop from undo stack
-      const previousState = state.undoStack[state.undoStack.length - 1];
-      const newUndoStack = state.undoStack.slice(0, -1);
+      // Pop from undo stack (newest state is at index 0)
+      const previousState = state.undoStack[0];
+      const newUndoStack = state.undoStack.slice(1);
 
       // Push current state to redo stack
       const newRedoStack = [cloneFormState(state), ...state.redoStack];

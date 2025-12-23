@@ -310,12 +310,19 @@ describe("FormStateProvider", () => {
       const redoBtn = screen.getByTestId("redo-btn") as HTMLButtonElement;
       expect(redoBtn.disabled).toBe(true);
 
+      // First update the title to enable undo
       act(() => {
         screen.getByTestId("update-title").click();
+      });
+
+      // Then undo to enable redo
+      act(() => {
         screen.getByTestId("undo-btn").click();
       });
 
-      expect(redoBtn.disabled).toBe(false);
+      // Re-query after state update
+      const redoBtnAfterUndo = screen.getByTestId("redo-btn") as HTMLButtonElement;
+      expect(redoBtnAfterUndo.disabled).toBe(false);
     });
   });
 
