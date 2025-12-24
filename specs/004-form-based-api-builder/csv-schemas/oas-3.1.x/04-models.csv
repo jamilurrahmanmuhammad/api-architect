@@ -1,0 +1,10 @@
+model_name*,description,type,type_array,discriminator_property,discriminator_mapping,deprecated,read_only,write_only,xml_name,xml_namespace,xml_prefix,xml_attribute,xml_wrapped,additional_properties,min_properties,max_properties,all_of,one_of,any_of,not,if_schema,then_schema,else_schema,dependent_required,dependent_schemas,prefix_items,contains,min_contains,max_contains,unevaluated_items,unevaluated_properties,const,content_encoding,content_media_type,content_schema,external_docs_url,external_docs_description,oas_path
+Pet,A pet in the store,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.Pet"
+Category,Pet category,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.Category"
+Tag,Pet tag,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.Tag"
+Order,Store order,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.Order"
+User,User account,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.User"
+ApiResponse,API response wrapper,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.ApiResponse"
+Error,Error response,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.Error"
+NullableString,String that can be null,"string;null",,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.NullableString"
+WebhookPayload,Webhook event payload,object,,,,false,false,false,,,,,false,,,,,,,,,,,,,,,,,,,,,,"components.schemas.WebhookPayload"

@@ -1,0 +1,9 @@
+webhook_name*,method*,summary,description,request_body_ref,request_body_required,request_content_type,response_status*,response_description,response_schema_ref,tags,deprecated,oas_path
+newPet,post,New pet notification,Webhook triggered when a new pet is added to the store,@model:Pet,true,application/json,200,Webhook received successfully,,webhooks,false,"webhooks.newPet.post"
+petStatusUpdate,post,Pet status update,Webhook triggered when pet status changes,@model:WebhookPayload,true,application/json,200,Status update acknowledged,,webhooks,false,"webhooks.petStatusUpdate.post"
+orderPlaced,post,Order placed notification,Webhook triggered when a new order is placed,@model:Order,true,application/json,200,Order notification received,,webhooks;store,false,"webhooks.orderPlaced.post"
+orderStatusChange,post,Order status change,Webhook triggered when order status changes,@model:WebhookPayload,true,application/json,200,Status change acknowledged,,webhooks;store,false,"webhooks.orderStatusChange.post"
+userRegistered,post,User registration,Webhook triggered when a new user registers,@model:User,true,application/json,200,Registration notification received,,webhooks;users,false,"webhooks.userRegistered.post"
+inventoryLow,post,Low inventory alert,Webhook triggered when inventory falls below threshold,@model:WebhookPayload,true,application/json,200,Alert acknowledged,,webhooks;store,false,"webhooks.inventoryLow.post"
+paymentReceived,post,Payment received,Webhook triggered when payment is processed,@model:WebhookPayload,true,application/json,200,Payment notification received,,webhooks;store,false,"webhooks.paymentReceived.post"
+deliveryUpdate,post,Delivery status update,Webhook triggered when delivery status changes,@model:WebhookPayload,true,application/json,200,Delivery update acknowledged,,webhooks;store,false,"webhooks.deliveryUpdate.post"

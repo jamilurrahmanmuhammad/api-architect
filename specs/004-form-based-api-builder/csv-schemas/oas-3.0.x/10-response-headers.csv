@@ -1,0 +1,9 @@
+header_name*,description,required,deprecated,allow_empty_value,style,explode,schema_type,schema_format,example,oas_path
+X-Rate-Limit,Calls per hour allowed by the user,false,false,false,simple,false,integer,int32,100,"components.headers.X-Rate-Limit"
+X-Expires-After,Date in UTC when token expires,false,false,false,simple,false,string,date-time,2024-01-15T12:00:00Z,"components.headers.X-Expires-After"
+X-Request-Id,Unique request identifier,false,false,false,simple,false,string,uuid,550e8400-e29b-41d4-a716-446655440000,"components.headers.X-Request-Id"
+X-Pagination-Total,Total number of items,false,false,false,simple,false,integer,int32,1000,"components.headers.X-Pagination-Total"
+X-Pagination-Page,Current page number,false,false,false,simple,false,integer,int32,1,"components.headers.X-Pagination-Page"
+X-Pagination-Limit,Items per page,false,false,false,simple,false,integer,int32,20,"components.headers.X-Pagination-Limit"
+ETag,Entity tag for caching,false,false,false,simple,false,string,,"\"abc123\"","components.headers.ETag"
+Last-Modified,Last modification timestamp,false,false,false,simple,false,string,date-time,2024-01-15T10:00:00Z,"components.headers.Last-Modified"

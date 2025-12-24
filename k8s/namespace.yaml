@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: api-architect
+  labels:
+    app.kubernetes.io/name: api-architect
+    app.kubernetes.io/part-of: api-architect

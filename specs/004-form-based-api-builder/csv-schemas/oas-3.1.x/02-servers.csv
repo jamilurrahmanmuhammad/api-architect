@@ -1,0 +1,5 @@
+server_id,url*,description,variable_name,variable_default,variable_enum,variable_description,oas_path
+server_1,https://api.example.com/v1,Production server,,,,,"servers[0]"
+server_2,https://staging-api.example.com/v1,Staging server,,,,,"servers[1]"
+server_3,https://{environment}.example.com/{version},Dynamic server,environment,production,"production;staging;development",Server environment,"servers[2]"
+,,,version,v1,"v1;v2",API version,

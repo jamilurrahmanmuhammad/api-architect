@@ -12,7 +12,7 @@ describe('API Client', () => {
 
   describe('configuration', () => {
     it('should have correct base URL from environment', () => {
-      expect(apiClient.baseUrl).toBe('http://localhost:8000/api/v1');
+      expect(apiClient.baseUrl).toBe('http://localhost:8765/api/v1');
     });
 
     it('should include default headers', () => {

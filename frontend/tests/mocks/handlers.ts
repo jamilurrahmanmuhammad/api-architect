@@ -195,4 +195,220 @@ export const handlers = [
       },
     });
   }),
+
+  // Parse DSL content
+  http.post('*/api/v1/parse', async ({ request }) => {
+    const body = (await request.json()) as { content: string };
+    const content = body.content || '';
+
+    // Simple parsing logic for testing
+    const services: Array<{
+      name: string;
+      version: string;
+      base_path: string;
+      description: string | null;
+      location: { line: number; column: number };
+    }> = [];
+    const models: Array<{
+      name: string;
+      description: string | null;
+      fields: Array<{
+        name: string;
+        type: string;
+        required: boolean;
+        location: { line: number; column: number };
+      }>;
+      location: { line: number; column: number };
+    }> = [];
+    const operations: Array<{
+      method: string;
+      path: string;
+      description: string | null;
+      location: { line: number; column: number };
+    }> = [];
+    const errors: Array<{
+      status_code: number;
+      name: string;
+      description: string | null;
+      location: { line: number; column: number };
+    }> = [];
+
+    // Parse services
+    const serviceMatches = content.matchAll(/# Service:\s*(\w+)/g);
+    let lineNum = 1;
+    for (const match of serviceMatches) {
+      services.push({
+        name: match[1],
+        version: '1.0.0',
+        base_path: '/api',
+        description: null,
+        location: { line: lineNum, column: 1 },
+      });
+      lineNum++;
+    }
+
+    // Parse models
+    const modelMatches = content.matchAll(/## Model:\s*(\w+)/g);
+    for (const match of modelMatches) {
+      models.push({
+        name: match[1],
+        description: null,
+        fields: [],
+        location: { line: lineNum, column: 1 },
+      });
+      lineNum++;
+    }
+
+    // Parse operations
+    const opMatches = content.matchAll(/## Operation:\s*(GET|POST|PUT|DELETE)\s+(\S+)/g);
+    for (const match of opMatches) {
+      operations.push({
+        method: match[1],
+        path: match[2],
+        description: null,
+        location: { line: lineNum, column: 1 },
+      });
+      lineNum++;
+    }
+
+    // Parse errors
+    const errorMatches = content.matchAll(/## Error:\s*(\d+)\s+(\w+)/g);
+    for (const match of errorMatches) {
+      errors.push({
+        status_code: parseInt(match[1]),
+        name: match[2],
+        description: null,
+        location: { line: lineNum, column: 1 },
+      });
+      lineNum++;
+    }
+
+    const valid_entities = services.length + models.length + operations.length + errors.length;
+
+    return HttpResponse.json({
+      services,
+      models,
+      operations,
+      errors,
+      parse_errors: [],
+      valid_entities,
+      total_errors: 0,
+    });
+  }),
+
+  // Validate DSL content
+  http.post('*/api/v1/validate', async ({ request }) => {
+    const body = (await request.json()) as { content: string };
+    const content = body.content || '';
+
+    // Simple validation logic for testing
+    const errors: Array<{
+      line: number;
+      column: number;
+      message: string;
+      error_type: string;
+      severity: string;
+      guidance: string | null;
+    }> = [];
+
+    // Check for undefined model references
+    if (content.includes('UndefinedModel')) {
+      errors.push({
+        line: 1,
+        column: 1,
+        message: "Undefined model reference 'UndefinedModel'",
+        error_type: 'UNDEFINED_REFERENCE',
+        severity: 'error',
+        guidance: 'Define the model before referencing it',
+      });
+    }
+
+    // Check for invalid types
+    if (content.includes('invalidtype')) {
+      errors.push({
+        line: 1,
+        column: 1,
+        message: "Invalid type 'invalidtype'",
+        error_type: 'INVALID_TYPE',
+        severity: 'error',
+        guidance: 'Use valid types like string, integer, boolean',
+      });
+    }
+
+    // Check for duplicate models
+    const modelMatches = content.match(/## Model:\s*(\w+)/g) || [];
+    const modelNames = modelMatches.map((m) => m.replace('## Model:', '').trim());
+    const seen = new Set<string>();
+    for (const name of modelNames) {
+      if (seen.has(name)) {
+        errors.push({
+          line: 1,
+          column: 1,
+          message: `Duplicate model '${name}'`,
+          error_type: 'DUPLICATE_ENTITY',
+          severity: 'error',
+          guidance: 'Use unique model names',
+        });
+      }
+      seen.add(name);
+    }
+
+    return HttpResponse.json({
+      valid: errors.length === 0,
+      errors,
+      error_count: errors.length,
+      warning_count: 0,
+    });
+  }),
+
+  // Export to OpenAPI
+  http.post('*/api/v1/export', async ({ request }) => {
+    const body = (await request.json()) as {
+      content: string;
+      format: 'yaml' | 'json';
+      version: '3.0' | '3.1';
+    };
+
+    const { content, format, version } = body;
+
+    if (!content || !content.trim()) {
+      return HttpResponse.json(
+        { detail: 'Content is empty' },
+        { status: 422 }
+      );
+    }
+
+    // Generate simple mock OpenAPI spec
+    const spec = {
+      openapi: version === '3.1' ? '3.1.0' : '3.0.3',
+      info: {
+        title: 'Mock API',
+        version: '1.0.0',
+      },
+      paths: {},
+    };
+
+    if (format === 'json') {
+      return HttpResponse.json(spec, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Disposition': 'attachment; filename=openapi.json',
+        },
+      });
+    } else {
+      // Return YAML-like string for testing
+      const yamlContent = `openapi: '${spec.openapi}'
+info:
+  title: ${spec.info.title}
+  version: ${spec.info.version}
+paths: {}`;
+
+      return new HttpResponse(yamlContent, {
+        headers: {
+          'Content-Type': 'application/x-yaml',
+          'Content-Disposition': 'attachment; filename=openapi.yaml',
+        },
+      });
+    }
+  }),
 ];

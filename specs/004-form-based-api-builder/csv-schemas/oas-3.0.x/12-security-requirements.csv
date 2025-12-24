@@ -1,0 +1,13 @@
+scope,operation_id,scheme_name*,scopes,oas_path
+global,,api_key,,"security[0]"
+global,,bearer_auth,,"security[1]"
+operation,listPets,petstore_auth,read:pets,"paths./pets.get.security[0]"
+operation,createPet,petstore_auth,write:pets;read:pets,"paths./pets.post.security[0]"
+operation,getPetById,petstore_auth,read:pets,"paths./pets/{petId}.get.security[0]"
+operation,updatePet,petstore_auth,write:pets;read:pets,"paths./pets/{petId}.put.security[0]"
+operation,deletePet,api_key,,"paths./pets/{petId}.delete.security[0]"
+operation,deletePet,petstore_auth,write:pets;read:pets,"paths./pets/{petId}.delete.security[1]"
+operation,getInventory,api_key,,"paths./store/inventory.get.security[0]"
+operation,placeOrder,bearer_auth,,"paths./store/order.post.security[0]"
+operation,loginUser,,,"paths./users/login.get.security"
+operation,logoutUser,bearer_auth,,"paths./users/logout.get.security[0]"

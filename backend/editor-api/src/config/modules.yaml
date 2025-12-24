@@ -1,0 +1,56 @@
+# Module configuration for API Architect
+
+modules:
+  - id: api-design
+    name: API Design
+    description: Design and document RESTful APIs with OpenAPI specifications
+    icon: FileCode
+    route: /app/api-design
+    enabled: true
+    order: 1
+    badge: null
+
+  - id: data-modeling
+    name: Data Modeling
+    description: Create and manage database schemas and entity relationships
+    icon: Database
+    route: /app/data-modeling
+    enabled: true
+    order: 2
+    badge: null
+
+  - id: code-generation
+    name: Code Generation
+    description: Generate boilerplate code from API specifications
+    icon: Cpu
+    route: /app/code-generation
+    enabled: true
+    order: 3
+    badge: New
+
+  - id: documentation
+    name: Documentation
+    description: Auto-generate API documentation from specifications
+    icon: BookOpen
+    route: /app/documentation
+    enabled: true
+    order: 4
+    badge: null
+
+  - id: testing
+    name: Testing
+    description: Create and run API tests with automated validation
+    icon: FlaskConical
+    route: /app/testing
+    enabled: true
+    order: 5
+    badge: null
+
+  - id: deployment
+    name: Deployment
+    description: Deploy APIs to cloud platforms with CI/CD integration
+    icon: Rocket
+    route: /app/deployment
+    enabled: false
+    order: 6
+    badge: Coming Soon

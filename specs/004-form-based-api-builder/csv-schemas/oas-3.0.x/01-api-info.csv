@@ -1,0 +1,10 @@
+field_name,value,description,oas_path,required,ui_control,validation
+title*,,Human-readable API name,info.title,yes,text,min:1 max:100
+version*,,API version (semver recommended),info.version,yes,text,pattern:semver
+description,,Markdown description of the API,info.description,no,textarea,max:5000
+terms_of_service,,URL to Terms of Service,info.termsOfService,no,url,pattern:url
+contact_name,,Contact person/team name,info.contact.name,no,text,max:100
+contact_email,,Contact email address,info.contact.email,no,email,pattern:email
+contact_url,,Contact page URL,info.contact.url,no,url,pattern:url
+license_name,,License name (e.g. Apache 2.0),info.license.name,no,text,max:100
+license_url,,License URL,info.license.url,no,url,pattern:url
