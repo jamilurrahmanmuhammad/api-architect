@@ -11,14 +11,9 @@ import { NotFound } from './pages/NotFound';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { FilesPage } from './pages/FilesPage';
 import { EditorPage } from './pages/EditorPage';
+import { ApiBuilderPage } from './pages/ApiBuilderPage';
 
 // Module placeholder pages
-const ApiDesignModule = () => (
-  <div>
-    <h1 className="text-2xl font-bold">API Design</h1>
-    <p className="text-muted-foreground">Design and document RESTful APIs</p>
-  </div>
-);
 const DataModelingModule = () => (
   <div>
     <h1 className="text-2xl font-bold">Data Modeling</h1>
@@ -70,7 +65,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'api-design',
-        element: <ApiDesignModule />,
+        element: <ApiBuilderPage />,
       },
       {
         path: 'data-modeling',
@@ -112,6 +107,12 @@ export const router = createBrowserRouter([
         <FilesPage />
       </ProtectedRoute>
     ),
+  },
+
+  // API Builder standalone route (for E2E testing)
+  {
+    path: '/api-builder',
+    element: <ApiBuilderPage />,
   },
 
   // Catch-all 404
