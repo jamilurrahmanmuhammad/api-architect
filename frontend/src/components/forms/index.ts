@@ -17,6 +17,8 @@ export { ProfileSelector, type ProfileSelectorProps } from "./ProfileSelector";
 export { ValidationPanel, type ValidationPanelProps } from "./ValidationPanel";
 export { OASViewer, type OASViewerProps } from "./OASViewer";
 export { UndoRedoButtons, type UndoRedoButtonsProps } from "./UndoRedoButtons";
+export { OASImportDialog, type OASImportDialogProps } from "./OASImportDialog";
+export { CSVImportDialog, type CSVImportDialogProps } from "./CSVImportDialog";
 
 // Tab components
 export { ApiInfoTab, type ApiInfoTabProps } from "./tabs";
