@@ -3,7 +3,7 @@
  * Generates and previews PDF documentation from OAS
  */
 
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { FileText, Download, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

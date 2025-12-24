@@ -3,7 +3,7 @@
  * Displays import results with undo capability
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Check, Undo2, X, ChevronDown, ChevronUp, Plus, Edit2, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

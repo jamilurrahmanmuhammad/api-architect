@@ -3,7 +3,7 @@
  * Shows conflicts between existing and incoming OAS data with resolution options
  */
 
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { AlertTriangle, Check, Plus, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -240,17 +240,17 @@ export function MergeConflictDialog({
           <div className="grid grid-cols-2 gap-4 text-sm font-medium">
             <div className="p-2 bg-muted/50 rounded">
               <span className="text-muted-foreground">Existing</span>
-              {existingInfo.version && (
+              {typeof existingInfo.version === "string" && existingInfo.version && (
                 <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
-                  {String(existingInfo.version)}
+                  {existingInfo.version}
                 </span>
               )}
             </div>
             <div className="p-2 bg-muted/50 rounded">
               <span className="text-muted-foreground">Incoming</span>
-              {incomingInfo.version && (
+              {typeof incomingInfo.version === "string" && incomingInfo.version && (
                 <span className="ml-2 text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded">
-                  {String(incomingInfo.version)}
+                  {incomingInfo.version}
                 </span>
               )}
             </div>
