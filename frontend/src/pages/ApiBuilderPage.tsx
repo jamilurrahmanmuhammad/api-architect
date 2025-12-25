@@ -3,9 +3,9 @@
  * Form-based OpenAPI specification builder
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FormStateProvider, useFormState, useUpdateField } from "@/providers/FormStateProvider";
+import { FormStateProvider, useFormState, useUpdateField, useLoadOas } from "@/providers/FormStateProvider";
 import {
   ApiInfoTab,
   ModelsTab,
@@ -22,15 +22,42 @@ import {
 } from "@/components/forms";
 import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { Button } from "@/components/ui/button";
-import { Upload, FileJson } from "lucide-react";
+import { Upload, FileJson, Save } from "lucide-react";
 
 function ApiBuilderContent() {
   const { state } = useFormState();
   const updateField = useUpdateField();
-  const { isSaving, lastSaved, error } = useFormPersistence();
+  const loadOas = useLoadOas();
+  const {
+    isSaving,
+    lastSaved,
+    error,
+    saveNow,
+    hasPersistedState,
+    getPersistedState,
+  } = useFormPersistence();
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showCSVImportDialog, setShowCSVImportDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
+  const [hasRestored, setHasRestored] = useState(false);
+
+  // Restore persisted state on mount (only once)
+  useEffect(() => {
+    if (hasRestored) return;
+
+    if (hasPersistedState) {
+      const savedState = getPersistedState();
+      if (savedState?.oasData) {
+        loadOas(savedState.oasData);
+        setHasRestored(true);
+      }
+    }
+  }, [hasPersistedState, getPersistedState, loadOas, hasRestored]);
+
+  // Handle manual save
+  const handleSave = useCallback(() => {
+    saveNow();
+  }, [saveNow]);
 
   const handleOASImport = useCallback(
     (oas: Record<string, unknown>) => {
@@ -86,6 +113,16 @@ function ApiBuilderContent() {
         </div>
         <div className="flex items-center gap-2">
           <UndoRedoButtons />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSave}
+            disabled={isSaving || !state.isDirty}
+            data-testid="save-button"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save
+          </Button>
           <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} error={error} />
           <Button
             variant="outline"

@@ -4,19 +4,25 @@
 
 ### Persistence Requirements
 
-**Priority: High**
+**Status: ✅ Implemented (2025-12-26)**
 
-Currently, the form builder stores changes in-memory (React state). Changes are lost on page refresh.
+Form state is now persisted to localStorage with:
+- **Auto-save**: Debounced save triggers when form is dirty (10-second delay)
+- **Manual Save button**: Immediate save with visual feedback
+- **State restoration**: Persisted state automatically restored on page load
+- **Save indicator**: Shows "Saving...", "Saved X ago", or error status
 
-**Required Enhancement:**
-- Add a **Save button** to persist changes
-- Options for persistence backend:
-  1. localStorage (client-side, survives refresh)
-  2. Backend API (server-side, survives across devices)
-  3. Both (localStorage as cache, API as source of truth)
+**Implementation:**
+- `useFormPersistence` hook: Auto-triggers save when `state.isDirty` and `state.oasData` change
+- Save button: Disabled when not dirty or already saving
+- State restoration: Runs once on mount via `useEffect`
 
-**User Feedback (2024-12-25):**
-> "There should be a save button to make the change persisted."
+**Files Changed:**
+- `frontend/src/hooks/useFormPersistence.ts` - Added auto-save effect
+- `frontend/src/pages/ApiBuilderPage.tsx` - Added Save button and state restoration
+
+**Future Enhancement (optional):**
+- Backend API persistence for cross-device sync
 
 ---
 

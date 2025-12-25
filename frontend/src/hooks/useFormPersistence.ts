@@ -295,6 +295,16 @@ export function useFormPersistence(
   // Format last saved time
   const lastSavedFormatted = lastSaved ? formatRelativeTime(lastSaved) : null;
 
+  // Auto-save when state becomes dirty
+  useEffect(() => {
+    if (!enabled) return;
+
+    // Only trigger save when form is dirty (user made changes)
+    if (state.isDirty) {
+      triggerSave();
+    }
+  }, [enabled, state.isDirty, state.oasData, triggerSave]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
