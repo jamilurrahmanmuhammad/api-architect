@@ -20,12 +20,14 @@ import {
   CSVExportFlow,
   PDFExportFlow,
 } from "@/components/forms";
+import { useFormPersistence } from "@/hooks/useFormPersistence";
 import { Button } from "@/components/ui/button";
 import { Upload, FileJson } from "lucide-react";
 
 function ApiBuilderContent() {
   const { state } = useFormState();
   const updateField = useUpdateField();
+  const { isSaving, lastSaved, error } = useFormPersistence();
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showCSVImportDialog, setShowCSVImportDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
@@ -84,7 +86,7 @@ function ApiBuilderContent() {
         </div>
         <div className="flex items-center gap-2">
           <UndoRedoButtons />
-          <SaveIndicator />
+          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} error={error} />
           <Button
             variant="outline"
             size="sm"

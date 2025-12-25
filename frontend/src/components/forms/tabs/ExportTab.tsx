@@ -3,7 +3,7 @@
  * Form tab for exporting OpenAPI specs in various formats
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Download,
   FileJson,

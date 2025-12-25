@@ -3,7 +3,7 @@
  * Form tab for managing security schemes and global security requirements
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Plus, Trash2, Pencil, X, Shield, Key, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFormState, useUpdateField } from "@/providers/FormStateProvider";
@@ -140,15 +140,6 @@ export function SecurityTab({ className }: SecurityTabProps) {
   const isSchemeInGlobalSecurity = useCallback(
     (schemeName: string): boolean => {
       return globalSecurity.some((req) => schemeName in req);
-    },
-    [globalSecurity]
-  );
-
-  // Get scopes for a scheme in global security
-  const getGlobalSecurityScopes = useCallback(
-    (schemeName: string): string[] => {
-      const req = globalSecurity.find((r) => schemeName in r);
-      return req ? req[schemeName] : [];
     },
     [globalSecurity]
   );

@@ -3,7 +3,7 @@
  * Editor for operation request body and responses
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFormState } from "@/providers/FormStateProvider";

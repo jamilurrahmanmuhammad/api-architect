@@ -3,7 +3,7 @@
  * Form tab for editing API models/schemas (components.schemas)
  */
 
-import React, { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { Plus, Trash2, Search, X, Box, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormField } from "@/components/forms/FormField";

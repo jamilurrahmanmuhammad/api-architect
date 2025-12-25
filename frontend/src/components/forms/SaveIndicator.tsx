@@ -3,10 +3,9 @@
  * Displays save status (saving, saved, error) for form persistence
  */
 
-import React from "react";
 import { Loader2, Check, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FormPersistenceError } from "@/hooks/useFormPersistence";
+import type { FormPersistenceError } from "@/hooks/useFormPersistence";
 
 /**
  * Format timestamp as relative time (e.g., "2 minutes ago")

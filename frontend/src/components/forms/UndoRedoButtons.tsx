@@ -4,7 +4,7 @@
  * Wired to FormStateProvider for form state history management
  */
 
-import React, { useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { Undo2, Redo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUndoRedo } from "@/providers/FormStateProvider";

@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormState } from "@/providers/FormStateProvider";
-import { FormState, initialFormState } from "@/types/formState";
+import type { FormState } from "@/types/formState";
 
 /** Prefix for localStorage keys */
 export const STORAGE_KEY_PREFIX = "api-architect-form-";

@@ -3,10 +3,9 @@
  * Table-based editor for schema properties/fields
  */
 
-import React, { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ProfileGate } from "@/components/forms/ProfileGate";
 import { useFormState } from "@/providers/FormStateProvider";
 import { Button } from "@/components/ui/button";
 
@@ -114,7 +113,7 @@ function formatConstraints(prop: SchemaProperty): string[] {
  * FieldEditor component for editing schema properties.
  */
 export function FieldEditor({
-  modelName,
+  modelName: _modelName,
   schema,
   onSchemaChange,
   className,

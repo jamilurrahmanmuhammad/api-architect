@@ -3,7 +3,8 @@
  * Implements undo/redo stack management with 20-level max
  */
 
-import { FormState, FormAction, initialFormState } from "../types/formState";
+import { initialFormState } from "../types/formState";
+import type { FormState, FormAction } from "../types/formState";
 
 const MAX_UNDO_LEVELS = 20;
 

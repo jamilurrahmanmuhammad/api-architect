@@ -4,18 +4,18 @@
  * Controls form field visibility through FormStateProvider
  */
 
-import React, { useCallback } from "react";
+import { useCallback, type ReactNode } from "react";
 import { User, Users, Wrench, Code } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFormMetadata } from "@/providers/FormStateProvider";
-import { FormState } from "@/types/formState";
+import type { FormState } from "@/types/formState";
 import { PROFILE_INFO } from "./ProfileGate";
 
 /** Profile level type */
 type ProfileLevel = FormState["profile"];
 
 /** Profile configuration with icons */
-const PROFILES: { value: ProfileLevel; icon: React.ReactNode }[] = [
+const PROFILES: { value: ProfileLevel; icon: ReactNode }[] = [
   { value: "Basic", icon: <User className="h-4 w-4" /> },
   { value: "Advanced", icon: <Users className="h-4 w-4" /> },
   { value: "Technical", icon: <Wrench className="h-4 w-4" /> },
