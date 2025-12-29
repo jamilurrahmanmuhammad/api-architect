@@ -4,10 +4,9 @@
  * Used to show/hide form fields based on complexity profile (Basic/Advanced/Technical/Expert)
  */
 
-import React, { ReactNode, createElement } from "react";
-import { cn } from "@/lib/utils";
+import { type ReactNode, type JSX, createElement } from "react";
 import { useFormMetadata } from "@/providers/FormStateProvider";
-import { FormState } from "@/types/formState";
+import type { FormState } from "@/types/formState";
 
 /** Profile levels in order of increasing complexity */
 export type ProfileLevel = FormState["profile"];
@@ -107,7 +106,7 @@ export function ProfileGate({
   // Show content - optionally wrap in specified element
   if (wrapper) {
     return createElement(
-      wrapper,
+      wrapper as string,
       { className: wrapperClassName },
       children
     );

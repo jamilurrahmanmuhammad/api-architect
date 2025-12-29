@@ -3,10 +3,11 @@
  * Form tab for editing API models/schemas (components.schemas)
  */
 
-import React, { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { Plus, Trash2, Search, X, Box, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormField } from "@/components/forms/FormField";
+import { FieldEditor, type FieldEditorSchema } from "@/components/forms/tabs/FieldEditor";
 import { useFormState, useUpdateField } from "@/providers/FormStateProvider";
 import { Button } from "@/components/ui/button";
 
@@ -210,6 +211,14 @@ export function ModelsTab({ className }: ModelsTabProps) {
     [updateField]
   );
 
+  // Handle schema change from FieldEditor
+  const handleSchemaChange = useCallback(
+    (modelName: string, updatedSchema: FieldEditorSchema) => {
+      updateField(`/components/schemas/${modelName}`, updatedSchema);
+    },
+    [updateField]
+  );
+
   // Get references for model being deleted
   const deleteReferences = useMemo(() => {
     if (!showDeleteDialog) return [];
@@ -395,9 +404,17 @@ export function ModelsTab({ className }: ModelsTabProps) {
                   <p className="text-sm text-muted-foreground">
                     Type: <span className="font-medium">{getSchemaType(selectedSchema)}</span>
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    Fields: <span className="font-medium">{getFieldCount(selectedSchema)}</span>
-                  </p>
+                </div>
+
+                {/* Field Editor for properties */}
+                <div className="pt-4 border-t">
+                  <FieldEditor
+                    modelName={selectedModel}
+                    schema={selectedSchema as FieldEditorSchema}
+                    onSchemaChange={(updatedSchema) =>
+                      handleSchemaChange(selectedModel, updatedSchema)
+                    }
+                  />
                 </div>
               </div>
             ) : (

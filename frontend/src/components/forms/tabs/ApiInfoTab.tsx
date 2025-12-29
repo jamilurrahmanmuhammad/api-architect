@@ -3,7 +3,7 @@
  * Form tab for editing API information (info, servers, contact, license)
  */
 
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormField } from "@/components/forms/FormField";

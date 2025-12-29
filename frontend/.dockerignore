@@ -1,0 +1,33 @@
+# Build artifacts - MUST be excluded to force fresh builds
+# See L001 in .specify/memory/lessons-learned.md
+dist/
+build/
+
+# Dependencies - reinstalled fresh in container
+node_modules/
+
+# Development files
+*.log
+*.local
+.env*
+.DS_Store
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker (prevent recursive copy)
+Dockerfile
+.dockerignore
+docker-compose*.yml

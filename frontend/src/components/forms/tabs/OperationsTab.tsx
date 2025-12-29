@@ -3,7 +3,7 @@
  * Form tab for editing API operations/endpoints (paths)
  */
 
-import React, { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { Plus, Trash2, Search, X, FileCode2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormField } from "@/components/forms/FormField";
@@ -85,7 +85,7 @@ export function OperationsTab({ className }: OperationsTabProps) {
   const { state } = useFormState();
   const updateField = useUpdateField();
 
-  const { oasData, editedPaths } = state;
+  const { oasData } = state;
   const paths: Record<string, PathItem> = oasData.paths || {};
 
   // Local state
@@ -118,17 +118,6 @@ export function OperationsTab({ className }: OperationsTabProps) {
   const uniquePaths = useMemo(() => {
     return [...new Set(filteredOperations.map((op) => op.path))].sort();
   }, [filteredOperations]);
-
-  // Check if path is edited
-  const isEdited = useCallback(
-    (path: string) => {
-      for (const editedPath of editedPaths) {
-        if (editedPath.startsWith(`/paths/${path.replace(/\//g, "~1")}`)) return true;
-      }
-      return false;
-    },
-    [editedPaths]
-  );
 
   // Handle adding a new operation
   const handleAddOperation = useCallback(() => {

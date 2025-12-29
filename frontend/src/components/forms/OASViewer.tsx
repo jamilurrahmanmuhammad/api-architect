@@ -3,7 +3,7 @@
  * JSON/YAML viewer for OpenAPI specs with syntax highlighting
  */
 
-import React, { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { Copy, Check, ChevronDown, ChevronRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFormState } from "@/providers/FormStateProvider";
@@ -195,7 +195,7 @@ function isPathEdited(linePath: string, editedPaths: Set<string>): boolean {
 /**
  * Extract path from JSON line
  */
-function extractPathFromLine(line: string, lineIndex: number, allLines: string[]): string {
+function extractPathFromLine(_line: string, lineIndex: number, allLines: string[]): string {
   // Track object depth and current path
   const pathParts: string[] = [];
   let depth = 0;

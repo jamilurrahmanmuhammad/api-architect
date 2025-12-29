@@ -4,17 +4,14 @@
  * Provides form data, edit tracking, and undo/redo functionality
  */
 
-import React, { createContext, useContext, useReducer, ReactNode } from "react";
-import {
-  FormState,
-  FormAction,
-  initialFormState,
-} from "../types/formState";
+import { createContext, useContext, useReducer, type ReactNode, type Dispatch } from "react";
+import { initialFormState } from "../types/formState";
+import type { FormState, FormAction } from "../types/formState";
 import { formReducerWithUndo } from "../hooks/useFormReducer";
 
 interface FormContextType {
   state: FormState;
-  dispatch: React.Dispatch<FormAction>;
+  dispatch: Dispatch<FormAction>;
   canUndo: boolean;
   canRedo: boolean;
 }

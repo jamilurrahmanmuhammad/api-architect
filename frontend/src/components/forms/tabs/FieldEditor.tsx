@@ -3,12 +3,89 @@
  * Table-based editor for schema properties/fields
  */
 
-import React, { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ProfileGate } from "@/components/forms/ProfileGate";
 import { useFormState } from "@/providers/FormStateProvider";
 import { Button } from "@/components/ui/button";
+
+/**
+ * Controlled input for field names that only commits on blur.
+ * This prevents focus loss when typing by using local state.
+ */
+function FieldNameInput({
+  value,
+  onCommit,
+  className,
+}: {
+  value: string;
+  onCommit: (newValue: string) => void;
+  className?: string;
+}) {
+  const [localValue, setLocalValue] = useState(value);
+
+  // Sync local value when external value changes (e.g., after undo/redo)
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  return (
+    <input
+      type="text"
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onBlur={() => {
+        if (localValue !== value && localValue.trim()) {
+          onCommit(localValue);
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.currentTarget.blur();
+        }
+      }}
+      aria-label="Field name"
+      className={className}
+    />
+  );
+}
+
+/**
+ * Controlled input for field descriptions that only commits on blur.
+ */
+function FieldDescriptionInput({
+  value,
+  onCommit,
+  className,
+  placeholder,
+}: {
+  value: string;
+  onCommit: (newValue: string) => void;
+  className?: string;
+  placeholder?: string;
+}) {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  return (
+    <input
+      type="text"
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onBlur={() => {
+        if (localValue !== value) {
+          onCommit(localValue);
+        }
+      }}
+      aria-label="Description"
+      placeholder={placeholder}
+      className={className}
+    />
+  );
+}
 
 /** Field type options */
 const FIELD_TYPES = [
@@ -21,7 +98,7 @@ const FIELD_TYPES = [
   { value: "$ref", label: "$ref" },
 ];
 
-interface SchemaProperty {
+export interface SchemaProperty {
   type?: string;
   $ref?: string;
   description?: string;
@@ -36,7 +113,7 @@ interface SchemaProperty {
   [key: string]: unknown;
 }
 
-interface Schema {
+export interface FieldEditorSchema {
   type?: string;
   description?: string;
   properties?: Record<string, SchemaProperty>;
@@ -48,9 +125,9 @@ export interface FieldEditorProps {
   /** Model/schema name */
   modelName: string;
   /** Schema object to edit */
-  schema: Schema;
+  schema: FieldEditorSchema;
   /** Callback when schema changes */
-  onSchemaChange: (schema: Schema) => void;
+  onSchemaChange: (schema: FieldEditorSchema) => void;
   /** Additional CSS classes */
   className?: string;
 }
@@ -114,7 +191,7 @@ function formatConstraints(prop: SchemaProperty): string[] {
  * FieldEditor component for editing schema properties.
  */
 export function FieldEditor({
-  modelName,
+  modelName: _modelName,
   schema,
   onSchemaChange,
   className,
@@ -137,7 +214,7 @@ export function FieldEditor({
       counter++;
     }
 
-    const newSchema: Schema = {
+    const newSchema: FieldEditorSchema = {
       ...schema,
       properties: {
         ...properties,
@@ -156,7 +233,7 @@ export function FieldEditor({
 
       const newRequired = required.filter((r) => r !== fieldName);
 
-      const newSchema: Schema = {
+      const newSchema: FieldEditorSchema = {
         ...schema,
         properties: newProperties,
         required: newRequired,
@@ -188,7 +265,7 @@ export function FieldEditor({
       // Update required array if needed
       const newRequired = required.map((r) => (r === oldName ? newName : r));
 
-      const newSchema: Schema = {
+      const newSchema: FieldEditorSchema = {
         ...schema,
         properties: newProperties,
         required: newRequired,
@@ -227,7 +304,7 @@ export function FieldEditor({
         }
       }
 
-      const newSchema: Schema = {
+      const newSchema: FieldEditorSchema = {
         ...schema,
         properties: {
           ...properties,
@@ -243,7 +320,7 @@ export function FieldEditor({
   // Handle changing field description
   const handleDescriptionChange = useCallback(
     (fieldName: string, description: string) => {
-      const newSchema: Schema = {
+      const newSchema: FieldEditorSchema = {
         ...schema,
         properties: {
           ...properties,
@@ -267,7 +344,7 @@ export function FieldEditor({
         ? required.filter((r) => r !== fieldName)
         : [...required, fieldName];
 
-      const newSchema: Schema = {
+      const newSchema: FieldEditorSchema = {
         ...schema,
         required: newRequired,
       };
@@ -281,7 +358,7 @@ export function FieldEditor({
   const handleRefChange = useCallback(
     (fieldName: string, newRef: string) => {
       const prop = properties[fieldName];
-      const newSchema: Schema = {
+      const newSchema: FieldEditorSchema = {
         ...schema,
         properties: {
           ...properties,
@@ -341,7 +418,7 @@ export function FieldEditor({
               </tr>
             </thead>
             <tbody>
-              {fieldNames.map((fieldName) => {
+              {fieldNames.map((fieldName, index) => {
                 const prop = properties[fieldName];
                 const propType = getPropertyType(prop);
                 const isRequired = required.includes(fieldName);
@@ -349,17 +426,15 @@ export function FieldEditor({
 
                 return (
                   <tr
-                    key={fieldName}
+                    key={index}
                     data-testid={`field-row-${fieldName}`}
                     className="border-t"
                   >
                     {/* Name */}
                     <td className="px-3 py-2">
-                      <input
-                        type="text"
+                      <FieldNameInput
                         value={fieldName}
-                        onChange={(e) => handleRenameField(fieldName, e.target.value)}
-                        aria-label="Field name"
+                        onCommit={(newName) => handleRenameField(fieldName, newName)}
                         className="w-full h-8 px-2 rounded border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       />
                     </td>
@@ -415,11 +490,9 @@ export function FieldEditor({
 
                     {/* Description */}
                     <td className="px-3 py-2">
-                      <input
-                        type="text"
+                      <FieldDescriptionInput
                         value={prop.description || ""}
-                        onChange={(e) => handleDescriptionChange(fieldName, e.target.value)}
-                        aria-label="Description"
+                        onCommit={(desc) => handleDescriptionChange(fieldName, desc)}
                         placeholder="Field description..."
                         className="w-full h-8 px-2 rounded border border-input bg-background text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       />

@@ -3,7 +3,7 @@
  * Real-time validation feedback display for form errors and warnings
  */
 
-import React, { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import {
   AlertCircle,
   AlertTriangle,
@@ -41,15 +41,6 @@ export interface ValidationPanelProps {
  */
 function decodeJsonPointer(path: string): string {
   return path.replace(/~1/g, "/").replace(/~0/g, "~");
-}
-
-/**
- * Format path for human-readable display
- */
-function formatPath(path: string): string {
-  const decoded = decodeJsonPointer(path);
-  // Remove leading slash and convert to readable format
-  return decoded.replace(/^\//, "").replace(/\//g, " > ");
 }
 
 /**
